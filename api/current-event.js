@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     
     const events = eventsRes.data.items || [];
     
-    const fpgEvent = events.find(e => e.summary && e.summary.startsWith('Florida Players - '));
+    const fpgEvent = events.find(e => e.summary && /^Florida Players\s*[-–—]\s*/.test(e.summary));
     
     if (!fpgEvent) {
       return res.status(200).json({ eventString: '', date: '' });
