@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     
     const now = new Date();
     const eventsRes = await calendar.events.list({
-      calendarId: 'primary', 
+      calendarId: 'floridaplayersgroup25@gmail.com', 
       timeMin: now.toISOString(),
       maxResults: 10,
       singleEvents: true,
