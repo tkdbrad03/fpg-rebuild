@@ -28,8 +28,7 @@ module.exports = async (req, res) => {
     console.log("DEBUG - Total events found:", events.length);
     events.forEach((e, idx) => console.log(`Event [${idx}]: "${e.summary}" | Start:`, JSON.stringify(e.start)));
     
-    const fpgEvent = events.find(e => e.summary && /^Florida Players\s*[-–—]\s*/.test(e.summary));
-    
+const fpgEvent = events.find(e => e.summary && /^Florida Players\s*[-–—]\s*/.test(e.summary.trim()));    
     if (!fpgEvent) {
       return res.status(200).json({ eventString: '', date: '' });
     }
