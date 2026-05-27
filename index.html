@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FPG Player Check-In</title>
+  <style>
+    :root {
+      --fpg-green: #2D5016;
+      --fpg-green-dark: #1e3a0f;
+      --fpg-gold: #d4af37;
+      --fpg-light: #f5f7f4;
+      --fpg-white: #ffffff;
+      --fpg-dark: #1a1a1a;
+      --fpg-gray: #718096;
+      --fpg-error: #e53e3e;
+      --fpg-success: #38a169;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--fpg-light);
+      color: var(--fpg-dark);
+      padding-bottom: 40px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header & Branding */
+    header {
+      background-color: var(--fpg-green-dark);
+      color: var(--fpg-white);
+      padding: 20px 16px;
+      text-align: center;
+      border-bottom: 4px solid var(--fpg-gold);
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* Main Container */
+    main {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Event Information Card */
+    .event-card {
+      background-color: var(--fpg-white);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-left: 4px solid var(--fpg-green);
+    }
+
+    .event-card h2 {
+      font-size: 0.9rem;
+      color: var(--fpg-gray);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .event-card .event-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--fpg-green-dark);
+    }
+
+    /* Alert and Notification Banners */
+    .banner {
+      padding: 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: none;
+      line-height: 1.4;
+    }
+
+    .banner-error {
+      background-color: #fff5f5;
+      color: var(--fpg-error);
+      border: 1px solid var(--fpg-error);
+    }
+
+    .banner-success {
+      background-color: #f0fff4;
+      color: var(--fpg-success);
+      border: 1px solid var(--fpg-success);
+    }
+
+    /* Loading Overlay */
+    #loading-overlay {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-top-color: var(--fpg-green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 12px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Form Design */
+    form {
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--fpg-green-dark);
+    }
+
+    select, input[type="text"], textarea {
+      width: 100%;
+      min-height: 48px; /* Optimized for touch targets */
+      padding: 12px;
+      font-size: 16px; /* Prevents iOS auto-zoom on focus */
+      border: 1px solid #cbd5e0;
+      border-radius: 8px;
+      background-color: var(--fpg-white);
+      color: var(--fpg-dark);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    select:focus, input[type="text"]:focus, textarea:focus {
+      border-color: var(--fpg-green);
+      box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+    }
+
+    /* Guest Section Styling */
+    .guest-container {
+      background-color: #edf2f7;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    .guest-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .guest-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .btn-remove-guest {
+      background-color: var(--fpg-error);
+      color: var(--fpg-white);
+      border: none;
+      border-radius: 8px;
+      width: 48px;
+      min-height: 48px;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .btn-add-guest {
+      background-color: #cbd5e0;
+      color: var(--fpg-dark);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-top: 4px;
+      width: 100%;
+      min-height: 40px;
+    }
+
+    /* Radio Group for Tee Preference */
+    .radio-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .radio-label {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      background-color: var(--fpg-white);
+      border: 2px solid #cbd5e0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    input[type="radio"]:checked + .radio-label {
+      border-color: var(--fpg-green);
+      background-color: #f0fff4;
+      color: var(--fpg-green-dark);
+    }
+
+    /* Submit Action Button */
+    .btn-submit {
+      width: 100%;
+      min-height: 54px;
+      background-color: var(--fpg-green);
+      color: var(--fpg-white);
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 12px;
+      box-shadow: 0 4px 6px rgba(45, 80, 22, 0.2);
+    }
+
+    .btn-submit:disabled {
+      background-color: #cbd5e0;
+      color: var(--fpg-gray);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>FPG Membership Portal</h1>
+  </header>
+
+  <main>
+    <div class="event-card">
+      <h2>Current Event</h2>
+      <div id="event-display" class="event-title">Loading upcoming round...</div>
+    </div>
+
+    <div id="lockout-banner" class="banner banner-error">
+      Registration closed. Check-in locks down promptly on Thursday at 12:00 PM Eastern prior to the round.
+    </div>
+    <div id="duplicate-banner" class="banner banner-error">
+      You are already checked in for this event. Duplicate registration is blocked.
+    </div>
+    <div id="success-banner" class="banner banner-success">
+      Check-in submitted successfully! Your preferences have been saved.
+    </div>
+
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <p style="color: var(--fpg-gray); font-weight: 500;">Loading configurations...</p>
+    </div>
+
+    <form id="checkin-form">
+      
+      <div class="form-group">
+        <label for="player-select">Select Your Name</label>
+        <select id="player-select" required>
+          <option value="" disabled selected>-- Select Member --</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Tee Selection Preference</label>
+        <div class="radio-group">
+          <input type="radio" id="tee-default" name="teePreference" value="Yes" checked>
+          <label for="tee-default" class="radio-label">Use Default Tee</label>
+
+          <input type="radio" id="tee-alternate" name="teePreference" value="No">
+          <label for="tee-alternate" class="radio-label">Alternate Tee</label>
+        </div>
+        <p id="tee-hint" style="font-size: 0.85rem; color: var(--fpg-gray); margin-top: 6px; font-style: italic;"></p>
+      </div>
+
+      <div class="form-group">
+        <label>Bring Guests?</label>
+        <div id="guests-wrapper"></div>
+        <button type="button" class="btn-add-guest" id="btn-add-guest">+ Add Guest</button>
+      </div>
+
+      <div class="form-group">
+        <label for="pairing-request">Pairing Request / Notes</label>
+        <textarea id="pairing-request" placeholder="Optional notes for the Pairing Tool layout..." rows="2"></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submit-button">Confirm Check-In</button>
+    </form>
+  </main>
+
+  <script>
+    // State Registry
+    let currentEventString = "";
+    let systemLockoutActive = false;
+    let memberRoster = [];
+    let existingCheckins = [];
+    let defaultTeesMap = [];
+
+    // Execution entrypoint
+    document.addEventListener("DOMContentLoaded", async () => {
+      try {
+        await bootstrapCheckInContext();
+      } catch (error) {
+        console.error("Initialization breakdown:", error);
+        document.getElementById("event-display").textContent = "Error loading event configuration.";
+      } finally {
+        document.getElementById("loading-overlay").style.display = "none";
+      }
+    });
+
+    // Integrated asynchronous bootstrap data pull
+    async function bootstrapCheckInContext() {
+      // Execute data pulls concurrently
+      const [eventRes, membersRes, checkinsRes, teesRes] = await Promise.all([
+        fetch('/api/current-event').then(r => r.json()).catch(() => null),
+        fetch('/api/members').then(r => r.json()).catch(() => []),
+        fetch('/api/checkins').then(r => r.json()).catch(() => []),
+        fetch('/api/default-tees').then(r => r.json()).catch(() => [])
+      ]);
+
+      if (!eventRes || !eventRes.eventString) {
+        document.getElementById("event-display").textContent = "No active event discovered.";
+        return;
+      }
+
+      currentEventString = eventRes.eventString; // e.g., "Florida Players - Lexington Oaks, May 23"
+      document.getElementById("event-display").textContent = currentEventString;
+
+      memberRoster = membersRes;         // Array of clean strings
+      existingCheckins = checkinsRes;     // Array of row objects [{ Event, PlayerName }]
+      defaultTeesMap = teesRes;           // Array of objects [{ Player, Course, Tee }]
+
+      // Enforce temporal cutoff validation
+      evaluateLockoutThreshold(eventRes.date);
+
+      if (systemLockoutActive) {
+        document.getElementById("lockout-banner").style.display = "block";
+        return;
+      }
+
+      // Populate interactive client views
+      populateRosterDropdown();
+      bindInteractiveUIEvents();
+      
+      // Attempt auto-fill recovery from localStorage
+      applySavedPlayerIdentity();
+
+      // Form can safely handle input now
+      document.getElementById("checkin-form").style.display = "block";
+    }
+
+    // Thursday Noon EST Lockout Logic
+    function evaluateLockoutThreshold(eventDateIsoString) {
+      // Event string input format tracking: 'YYYY-MM-DD'
+      const roundDate = new Date(eventDateIsoString + 'T00:00:00');
+      
+      // Derive preceding Thursday checkpoint
+      const lockoutDate = new Date(roundDate);
+      lockoutDate.setDate(roundDate.getDate() - 2); 
+      lockoutDate.setHours(12, 0, 0, 0); // Precise Noon lock execution time
+
+      const clearNow = new Date();
+      if (clearNow > lockoutDate) {
+        systemLockoutActive = true;
+      }
+    }
+
+    // Populate Roster
+    function populateRosterDropdown() {
+      const select = document.getElementById("player-select");
+      memberRoster.sort().forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    }
+
+    // Events registration
+    function bindInteractiveUIEvents() {
+      const playerSelect = document.getElementById("player-select");
+      const addGuestBtn = document.getElementById("btn-add-guest");
+      const form = document.getElementById("checkin-form");
+
+      playerSelect.addEventListener("change", () => {
+        evaluateDuplicateStatus();
+        lookupDefaultTeeConfiguration();
+      });
+
+      addGuestBtn.addEventListener("click", () => {
+        appendGuestInputField();
+      });
+
+      form.addEventListener("submit", handleFormSubmission);
+    }
+
+    // Strict Non-Negotiable Duplicate Check: Match event string AND selected full name completely
+    function evaluateDuplicateStatus() {
+      const selectedPlayer = document.getElementById("player-select").value;
+      const dupBanner = document.getElementById("duplicate-banner");
+      const submitBtn = document.getElementById("submit-button");
+
+      // Core Rule: Absolute match equality checks only
+      const matchFound = existingCheckins.some(record => {
+        return record.Event === currentEventString && record.PlayerName === selectedPlayer;
+      });
+
+      if (matchFound) {
+        dupBanner.style.display = "block";
+        submitBtn.disabled = true;
+      } else {
+        dupBanner.style.display = "none";
+        submitBtn.disabled = false;
+      }
+    }
+
+    // Exact string course tee matching optimization
+    function lookupDefaultTeeConfiguration() {
+      const selectedPlayer = document.getElementById("player-select").value;
+      const hintElement = document.getElementById("tee-hint");
+      
+      // Parse Course Name directly out of standard structure template
+      // "Florida Players - {Course Name}, {Month} {Day}"
+      const parsingPrefix = "Florida Players - ";
+      const parseEndIndex = currentEventString.lastIndexOf(",");
+      
+      if (!currentEventString.startsWith(parsingPrefix) || parseEndIndex === -1) {
+        hintElement.textContent = "";
+        return;
+      }
+
+      const extractedCourseName = currentEventString.substring(parsingPrefix.length, parseEndIndex).trim();
+
+      // Strict matching search sequence execution
+      const preferredRecord = defaultTeesMap.find(rec => {
+        return rec.Player === selectedPlayer && rec.Course === extractedCourseName;
+      });
+
+      if (preferredRecord && preferredRecord.Tee) {
+        hintElement.textContent = `Your verified profile default here: ${preferredRecord.Tee}`;
+      } else {
+        hintElement.textContent = "No default preference tracked for this course location yet.";
+      }
+    }
+
+    // Guest DOM Management
+    function appendGuestInputField() {
+      const wrapper = document.getElementById("guests-wrapper");
+      const row = document.createElement("div");
+      row.className = "guest-row";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "Guest Full Name";
+      input.required = true;
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "btn-remove-guest";
+      removeBtn.textContent = "×";
+      removeBtn.addEventListener("click", () => row.remove());
+
+      row.appendChild(input);
+      row.appendChild(removeBtn);
+      wrapper.appendChild(row);
+      
+      // Instantly position display focusing to field target
+      input.focus();
+    }
+
+    // Local Storage Recovery
+    function applySavedPlayerIdentity() {
+      const retainedIdentityName = localStorage.getItem("fpg_player_name");
+      if (!retainedIdentityName) return;
+
+      const select = document.getElementById("player-select");
+      
+      // Verify profile match index target explicitly
+      for (let i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === retainedIdentityName) {
+          select.selectedIndex = i;
+          evaluateDuplicateStatus();
+          lookupDefaultTeeConfiguration();
+          break;
+        }
+      }
+    }
+
+    // Submit Processing Handler
+    async function handleFormSubmission(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById("submit-button");
+      const successBanner = document.getElementById("success-banner");
+      const errorBanner = document.getElementById("duplicate-banner"); // Reused container layout space
+      
+      const selectedPlayer = document.getElementById("player-select").value;
+      const teeSelectionPreference = document.querySelector('input[name="teePreference"]:checked').value;
+      const pairingNotes = document.getElementById("pairing-request").value;
+
+      // Map guests exactly matching structure requirement layout rule: "{Guest Name} (Guest of {Player Name})"
+      const guestRows = document.querySelectorAll(".guest-row input");
+      const compiledGuestsArray = [];
+      guestRows.forEach(input => {
+        const cleanName = input.value.trim();
+        if (cleanName) {
+          compiledGuestsArray.push(`${cleanName} (Guest of ${selectedPlayer})`);
+        }
+      });
+      const guestsDataPayloadString = compiledGuestsArray.join(", ");
+
+      // Final dynamic runtime verification step
+      if (systemLockoutActive) {
+        alert("Submission rejected. The registration window closed Thursday at Noon.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting Check-In...";
+
+      const requestPayload = {
+        event: currentEventString,
+        playerName: selectedPlayer,
+        guestNames: guestsDataPayloadString,
+        usesDefaultTees: teeSelectionPreference, // 'Yes' or 'No'
+        notes: pairingNotes
+      };
+
+      try {
+        const submissionResult = await fetch('/api/player-checkin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestPayload)
+        });
+
+        if (submissionResult.ok) {
+          // Write identity trace configuration target locally
+          localStorage.setItem("fpg_player_name", selectedPlayer);
+          
+          // Clear view elements display states completely 
+          document.getElementById("checkin-form").style.display = "none";
+          errorBanner.style.display = "none";
+          successBanner.style.display = "block";
+          window.scrollTo(0, 0);
+        } else {
+          throw new Error("API registration processing failure code status response.");
+        }
+      } catch (err) {
+        console.error("Submission Failure Profile:", err);
+        alert("Connection error: Failed to safely commit check-in row directly to central database.");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Confirm Check-In";
+      }
+    }
+  </script>
+</body>
+</html>
