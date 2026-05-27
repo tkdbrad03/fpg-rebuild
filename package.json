@@ -1,0 +1,7 @@
+{
+  "name": "fpg-portal-rebuild",
+  "version": "1.0.0",
+  "dependencies": {
+    "googleapis": "^126.0.0"
+  }
+}
