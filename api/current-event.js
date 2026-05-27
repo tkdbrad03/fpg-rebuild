@@ -16,21 +16,16 @@ module.exports = async (req, res) => {
     searchDate.setHours(0, 0, 0, 0);
     searchDate.setDate(searchDate.getDate() - 3);
     
-    const searchDate = new Date();
-searchDate.setHours(0, 0, 0, 0);
-searchDate.setDate(searchDate.getDate() - 3);
-
-const eventsRes = await calendar.events.list({
-  calendarId: 'floridaplayersgroup25@gmail.com', 
-  timeMin: searchDate.toISOString(),
-  maxResults: 20,
-  singleEvents: true,
-  orderBy: 'startTime',
-});
+    const eventsRes = await calendar.events.list({
+      calendarId: 'floridaplayersgroup25@gmail.com', 
+      timeMin: searchDate.toISOString(),
+      maxResults: 20,
+      singleEvents: true,
+      orderBy: 'startTime',
+    });
     
     const events = eventsRes.data.items || [];
     
-    // Strict Match Sequence: Find the official round matching your exact prefix rule
     const fpgEvent = events.find(e => e.summary && e.summary.startsWith('Florida Players - '));
     
     if (!fpgEvent) {
@@ -38,7 +33,7 @@ const eventsRes = await calendar.events.list({
     }
     
     // Cleanly pull the precise short-date string from the dateTime string
-    const eventDateStr = fpgEvent.start.dateTime ? fpgEvent.start.dateTime.split('T')[0] : (fpgEvent.start.date || '');
+const eventDateStr = fpgEvent.start.dateTime ? fpgEvent.start.dateTime.split('T')[0] : (fpgEvent.start.date || '');
     
     // Build the non-negotiable clean layout string if a comma format isn't present
     let dynamicEventString = fpgEvent.summary;
