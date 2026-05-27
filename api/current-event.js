@@ -11,44 +11,47 @@ module.exports = async (req, res) => {
     );
     const calendar = google.calendar({ version: 'v3', auth });
     
-    // Set timeMin to 2 days ago to bypass any strict timezone boundary drops
+    // Look from the start of the current week to safely capture the upcoming Saturday round
     const searchDate = new Date();
-    searchDate.setDate(searchDate.getDate() - 2);
+    searchDate.setHours(0, 0, 0, 0);
+    searchDate.setDate(searchDate.getDate() - 3);
     
-    const eventsRes = await calendar.events.list({
-      calendarId: 'floridaplayersgroup25@gmail.com', 
-      timeMin: searchDate.toISOString(),
-      maxResults: 20,
-      singleEvents: true,
-      orderBy: 'startTime',
-    });
+    const searchDate = new Date();
+searchDate.setHours(0, 0, 0, 0);
+searchDate.setDate(searchDate.getDate() - 3);
+
+const eventsRes = await calendar.events.list({
+  calendarId: 'floridaplayersgroup25@gmail.com', 
+  timeMin: searchDate.toISOString(),
+  maxResults: 20,
+  singleEvents: true,
+  orderBy: 'startTime',
+});
     
     const events = eventsRes.data.items || [];
     
-    // Strict Match Sequence: Match the prefix rule
+    // Strict Match Sequence: Find the official round matching your exact prefix rule
     const fpgEvent = events.find(e => e.summary && e.summary.startsWith('Florida Players - '));
     
     if (!fpgEvent) {
       return res.status(200).json({ eventString: '', date: '' });
     }
     
-    // Handle both all-day dates (e.g. 2026-05-30) and specific dateTimes
-    let eventDateStr = '';
-    if (fpgEvent.start) {
-      eventDateStr = fpgEvent.start.date || (fpgEvent.start.dateTime ? fpgEvent.start.dateTime.split('T')[0] : '');
-    }
+    // Cleanly pull the precise short-date string from the dateTime string
+    const eventDateStr = fpgEvent.start.dateTime ? fpgEvent.start.dateTime.split('T')[0] : (fpgEvent.start.date || '');
     
-    // Fallback: Force clean standard layout string if missing a comma
+    // Build the non-negotiable clean layout string if a comma format isn't present
     let dynamicEventString = fpgEvent.summary;
     if (!dynamicEventString.includes(',') && eventDateStr) {
-      const dateObj = new Date(eventDateStr + 'T00:00:00');
-      const monthStr = dateObj.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' });
-      const dayStr = dateObj.getUTCDate();
-      dynamicEventString = `${fpgEvent.summary}, ${monthStr} ${dayStr}`;
-    }
+  const [year, month, day] = eventDateStr.split('-').map(Number);
+  const dateObj = new Date(year, month - 1, day);
+  const monthStr = dateObj.toLocaleString('en-US', { month: 'long' });
+  const dayNum = dateObj.getDate();
+  dynamicEventString = `${fpgEvent.summary}, ${monthStr} ${dayNum}`;
+}
     
     return res.status(200).json({
-      eventString: dynamicEventString,
+      eventString: dynamicEventString, // Forces: "Florida Players - Greenfield Plantation, May 30"
       date: eventDateStr
     });
   } catch (error) {
