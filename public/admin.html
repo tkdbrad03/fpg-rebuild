@@ -384,22 +384,23 @@
 </head>
 <body>
 
-  <header>
-    <div class="header-inner">
-      <div class="header-left">
-        <h1>FPG Admin Dashboard</h1>
-        <div class="user-greeting" id="user-greeting">Loading...</div>
-      </div>
-      <button class="btn-logout" onclick="logout()">Sign Out</button>
+  <header style="background:url('/Golf_Course.png') center/cover; padding:30px 20px; text-align:center; position:relative;">
+  <div style="position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.4) 100%);"></div>
+  <button onclick="logout()" style="position:absolute; right:16px; top:16px; z-index:2; background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.3); border-radius:8px; padding:8px 14px; font-size:0.82rem; font-weight:600; cursor:pointer;">Sign Out</button>
+  <div style="position:relative; z-index:2;">
+    <div style="width:80px; height:80px; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+      <img src="/logo.png" style="width:78px; height:78px; object-fit:contain; border-radius:50%;">
     </div>
-  </header>
-
+    <h1 style="color:#F5C518; font-size:22px; font-weight:700; margin-bottom:4px;">FPG Admin Dashboard</h1>
+    <div id="user-greeting" style="color:rgba(255,255,255,0.9); font-size:0.88rem;"></div>
+  </div>
+</header>
   <!-- Tabs -->
   <div class="tabs">
     <div class="tab active" onclick="switchTab('overview')">Overview</div>
     <div class="tab" onclick="switchTab('checkins')">Check-Ins</div>
     <div class="tab" onclick="switchTab('pairings')">Pairings</div>
-    <div class="tab" onclick="switchTab('payments')">Payments</div>
+    
   </div>
 
   <main>
@@ -508,24 +509,7 @@
       </div>
     </div>
 
-    <!-- ── PAYMENTS TAB ── -->
-    <div class="tab-panel" id="tab-payments">
-      <div class="payment-summary">
-        <div class="pay-sum-item"><div class="pay-sum-val" id="pay-total-players">0</div><div class="pay-sum-lbl">Players</div></div>
-        <div class="pay-sum-item"><div class="pay-sum-val" id="pay-collected">$0</div><div class="pay-sum-lbl">Collected</div></div>
-        <div class="pay-sum-item"><div class="pay-sum-val" id="pay-expected">$0</div><div class="pay-sum-lbl">Expected</div></div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Payment Tracker</span>
-          <span style="font-size:0.78rem; color:var(--gray);">Tap ✓ to mark paid</span>
-        </div>
-        <div id="payment-list">
-          <div class="spinner-wrap"><div class="spinner"></div><div>Loading...</div></div>
-        </div>
-      </div>
-    </div>
-
+    
   </main>
 
   <!-- Add Player Modal -->
@@ -575,6 +559,41 @@
     let groups = [];
     let paymentStatus = {};
     let groupCounter = 0;
+    let gamingCoordinator = null;
+
+    let memberHandicaps = {};
+async function loadMemberHandicaps() {
+  try {
+    const res = await fetch('/api/member-handicaps');
+    const data = await res.json();
+    data.forEach(m => { memberHandicaps[m.name] = m.handicap; });
+  } catch(e) {}
+}
+
+async function loadExistingPairings() {
+  try {
+    const res = await fetch('/api/get-pairings');
+    const data = await res.json();
+    if (!data.published || data.groups.length === 0) return;
+    groups = [];
+    groupCounter = 0;
+    data.groups.forEach(group => {
+      groupCounter++;
+      const players = group.players.map(p => ({
+        name: p.name,
+        handicap: p.handicap || memberHandicaps[p.name] || null,
+        isGuest: false
+      }));
+      const sk1 = group.players.find(p => p.isScorekeeper)?.name || null;
+      const sk2 = group.players.filter(p => p.isScorekeeper)?.[1]?.name || null;
+      const gc = group.players.find(p => p.isGamingCoord)?.name || null;
+      if (gc) gamingCoordinator = gc;
+      groups.push({ id: groupCounter, players, teeTime: group.teeTime, sk1, sk2 });
+    });
+    renderGroups();
+    renderPool();
+  } catch(e) {}
+}
 
     // ── Boot ──
     document.addEventListener('DOMContentLoaded', async () => {
@@ -583,19 +602,18 @@
       await loadAll();
     });
 
-    async function loadAll() {
-      await loadEvent();
-      await Promise.all([loadCheckins(), loadMembers()]);
-      renderOverview();
-      renderCheckinsList();
-      renderPool();
-      renderPayments();
-    }
+async function loadAll() {
+  await loadEvent();
+  await Promise.all([loadCheckins(), loadMembers(), loadMemberHandicaps()]);
+  renderCheckinsList();
+  renderPool();
+  await loadExistingPairings();
+}
 
     // ── Tab switching ──
     function switchTab(name) {
       document.querySelectorAll('.tab').forEach((t, i) => {
-        const panels = ['overview','checkins','pairings','payments'];
+        const panels = ['overview','checkins','pairings'];
         t.classList.toggle('active', panels[i] === name);
       });
       document.querySelectorAll('.tab-panel').forEach(p => {
@@ -646,69 +664,7 @@
       } catch(e) { allMembers = []; }
     }
 
-    // ── OVERVIEW ──
-    function renderOverview() {
-      const count = allCheckins.length;
-      document.getElementById('ov-count').textContent = count;
-
-      // Pot totals — approximate from checkin data
-      let champ = 0, quota = 0, skins = 0, ctp = 0, blind = 0;
-      allCheckins.forEach(c => {
-        if (c.quickSelection && c.quickSelection.includes('ALL IN')) {
-          champ += 5; quota += 5; skins += 10; ctp += 5; blind += 5;
-        } else if (c.individualGames) {
-          const g = c.individualGames.toLowerCase();
-          if (g.includes('champion')) champ += 5;
-          if (g.includes('quota')) quota += 5;
-          if (g.includes('skins')) skins += 10;
-          if (g.includes('closest')) ctp += 5;
-          if (g.includes('blind')) blind += 5;
-        }
-      });
-      document.getElementById('ov-champ').textContent = `$${champ}`;
-      document.getElementById('ov-quota').textContent = `$${quota}`;
-      document.getElementById('ov-skins').textContent = `$${skins}`;
-      document.getElementById('ov-ctp').textContent = `$${ctp}`;
-      document.getElementById('ov-blind').textContent = `$${blind}`;
-
-      // Payment stats
-      let paidCount = 0, collected = 0, expected = 0;
-      allCheckins.forEach(c => {
-        const amt = parseInt((c.totalPayment || '').replace('$','')) || 0;
-        expected += amt;
-        if (paymentStatus[c.playerName]) { paidCount++; collected += amt; }
-      });
-      document.getElementById('ov-paid').textContent = paidCount;
-      document.getElementById('ov-collected').textContent = `$${collected}`;
-
-      // Pairing requests
-      const requests = allCheckins.filter(c => c.pairingRequest && c.pairingRequest.trim());
-      const reqEl = document.getElementById('ov-pairing-requests');
-      if (requests.length === 0) {
-        reqEl.innerHTML = `<div style="color:var(--gray); font-size:0.85rem;">No pairing requests submitted.</div>`;
-      } else {
-        reqEl.innerHTML = requests.map(c => `
-          <div style="padding:8px 0; border-bottom:1px solid var(--line); font-size:0.85rem;">
-            <strong>${c.playerName}</strong>: ${c.pairingRequest}
-          </div>`).join('');
-      }
-
-      // Cart path responses
-      const cartYes = allCheckins.filter(c => c.cartPathOnly && c.cartPathOnly.includes('still play')).length;
-      const cartNo = allCheckins.filter(c => c.cartPathOnly && c.cartPathOnly.includes('skip')).length;
-      document.getElementById('ov-cart-path').innerHTML = `
-        <div style="display:flex; gap:12px; font-size:0.88rem;">
-          <div style="flex:1; background:#d1fae5; border-radius:8px; padding:12px; text-align:center;">
-            <div style="font-size:1.3rem; font-weight:800; color:#065f46;">${cartYes}</div>
-            <div style="color:#065f46; font-size:0.75rem;">Will Still Play</div>
-          </div>
-          <div style="flex:1; background:#fee2e2; border-radius:8px; padding:12px; text-align:center;">
-            <div style="font-size:1.3rem; font-weight:800; color:#991b1b;">${cartNo}</div>
-            <div style="color:#991b1b; font-size:0.75rem;">Will Skip</div>
-          </div>
-        </div>`;
-    }
-
+    
     // ── CHECK-INS LIST ──
     function renderCheckinsList() {
       const el = document.getElementById('checkins-list');
@@ -825,10 +781,10 @@
       const el = document.getElementById('groups-area');
       if (groups.length === 0) {
         el.innerHTML = `<div style="text-align:center; padding:32px; color:var(--gray); font-size:0.88rem;">Click "+ Add Group" to start building pairings.</div>`;
-        document.getElementById('ov-groups').textContent = '—';
+        
         return;
       }
-      document.getElementById('ov-groups').textContent = groups.length;
+      
 
       el.innerHTML = groups.map((g, idx) => `
         <div class="group-builder">
@@ -939,23 +895,7 @@
         Object.values(paymentStatus).filter(Boolean).length;
     }
 
-    function togglePayment(playerName) {
-      paymentStatus[playerName] = !paymentStatus[playerName];
-      savePaymentStatus();
-      renderPayments();
-      renderOverview();
-    }
-
-    function savePaymentStatus() {
-      const key = `fpg_payments_${currentEventCourse}_${currentEventDate}`.replace(/\s/g,'_');
-      localStorage.setItem(key, JSON.stringify(paymentStatus));
-    }
-
-    function loadPaymentStatus() {
-      const key = `fpg_payments_${currentEventCourse}_${currentEventDate}`.replace(/\s/g,'_');
-      const saved = localStorage.getItem(key);
-      if (saved) paymentStatus = JSON.parse(saved);
-    }
+    
 
     // ── ADD PLAYER MODAL ──
     function showAddPlayerModal() {
@@ -1001,7 +941,7 @@
           await loadCheckins();
           renderCheckinsList();
           renderPool();
-          renderOverview();
+          
         } else {
           showToast('Failed to add player.', 'error');
         }
