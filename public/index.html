@@ -183,6 +183,8 @@
     <div class="card event-card">
       <h2>Current Event</h2>
       <div id="event-display" class="event-title">Loading upcoming round...</div>
+      <div id="event-location" style="font-size:0.85rem; color: var(--fpg-gray); margin-top:4px;"></div>
+      <div id="event-datetime" style="font-size:0.85rem; color: var(--fpg-gray); margin-top:2px;"></div>
     </div>
 
     <div id="lockout-banner" class="banner banner-error">
@@ -422,6 +424,8 @@
 
       currentEventString = eventRes.eventString;
       document.getElementById("event-display").textContent = currentEventString;
+      if (eventRes.location) document.getElementById("event-location").textContent = eventRes.location;
+      if (eventRes.teeTime) document.getElementById("event-datetime").textContent = `${eventRes.slashDate} • ${eventRes.teeTime}`;
 
       memberRoster = membersRes;
       existingCheckins = checkinsRes;
