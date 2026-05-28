@@ -425,7 +425,7 @@
 
       memberRoster = membersRes;
       existingCheckins = checkinsRes;
-      defaultTeesMap = teesRes;
+      defaultTeesMap = Array.isArray(teesRes) ? teesRes : [];
 
       evaluateLockoutThreshold(eventRes.date);
       if (systemLockoutActive) {
