@@ -144,19 +144,7 @@
       gap: 10px;
     }
     .player-row:last-child { border-bottom: none; }
-    .player-avatar {
-      width: 34px;
-      height: 34px;
-      background: var(--green);
-      color: var(--white);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.8rem;
-      flex-shrink: 0;
-    }
+    
     .player-info { flex: 1; min-width: 0; }
     .player-name { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .player-games { font-size: 0.75rem; color: var(--gray); margin-top: 2px; }
@@ -328,13 +316,13 @@
               </div>`;
 
           group.players.forEach(player => {
-            const initials = player.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+            
             const isAllIn = player.games && player.games.includes('ALL IN');
             const gamesDisplay = isAllIn ? 'ALL IN' : (player.games || '—');
 
             html += `
               <div class="player-row">
-                <div class="player-avatar">${initials}</div>
+                
                 <div class="player-info">
                   <div class="player-name">${player.name}</div>
                   <div class="player-games">${gamesDisplay}</div>
