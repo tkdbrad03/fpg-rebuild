@@ -825,10 +825,11 @@ async function loadAll() {
         groups: groups.map((g, idx) => ({
           groupNumber: idx + 1,
           teeTime: g.teeTime,
-          players: g.players.map(name => {
-            const checkin = allCheckins.find(c => c.playerName === name);
-            return { name, handicap: 0, quota: 0, strokes: 0 };
-          }),
+          players: g.players.map(p => {
+  const name = typeof p === 'string' ? p : p.name;
+  const hcp = (typeof p === 'object' && p.handicap) ? p.handicap : (memberHandicaps[name] || 0);
+  return { name, handicap: hcp, quota: 0, strokes: 0 };
+}),
           scorekeepers: [],
           gamingCoordinator: null
         }))
