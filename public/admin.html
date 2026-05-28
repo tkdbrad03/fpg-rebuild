@@ -481,7 +481,7 @@
         </div>
         <div class="tee-time-config">
           <label style="font-weight:600; color:var(--gray);">Gaming Coordinator</label>
-          <select id="gc-select" onchange="gamingCoordinator = this.value" style="border:none; outline:none; font-size:0.85rem; color:var(--dark); background:transparent;">
+          <select id="gc-select" onchange="gamingCoordinator = this.value; renderGroups();" style="border:none; outline:none; font-size:0.85rem; color:var(--dark); background:transparent;">
             <option value="">-- Select GC --</option>
           </select>
         </div>
