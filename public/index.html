@@ -445,17 +445,17 @@
       const selectedPlayer = document.getElementById("player-select").value;
       const hintElement = document.getElementById("tee-hint");
       
-      // Parse Course Name directly out of standard structure template
-      // "Florida Players - {Course Name}, {Month} {Day}"
+      // Cleanly separate the course name from the prefix rule and strip any trailing dates/commas safely
       const parsingPrefix = "Florida Players - ";
-      const parseEndIndex = currentEventString.lastIndexOf(",");
-      
-      if (!currentEventString.startsWith(parsingPrefix) || parseEndIndex === -1) {
+      if (!currentEventString.trim().startsWith(parsingPrefix)) {
         hintElement.textContent = "";
         return;
       }
 
-      const extractedCourseName = currentEventString.substring(parsingPrefix.length, parseEndIndex).trim();
+      let extractedCourseName = currentEventString.substring(parsingPrefix.length).trim();
+      if (extractedCourseName.includes(',')) {
+        extractedCourseName = extractedCourseName.split(',')[0].trim();
+      }
 
       // Strict matching search sequence execution
       const preferredRecord = defaultTeesMap.find(rec => {
