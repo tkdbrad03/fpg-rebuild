@@ -767,7 +767,8 @@
             ${assigned ? '<span style="font-size:0.7rem; color:var(--gray);">Assigned</span>' : '<span style="font-size:1rem; color:var(--green);">+</span>'}
           </div>`;
       }).join('');
-    }
+    updateGCDropdown();
+}
 function updateGCDropdown() {
   const sel = document.getElementById('gc-select');
   const current = sel.value;
