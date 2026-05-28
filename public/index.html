@@ -189,6 +189,9 @@
 
     <div id="lockout-banner" class="banner banner-error">
       Registration closed. Check-in locks down promptly on Thursday at 12:00 PM Eastern prior to the round.
+      <div style="margin-top:10px;">
+        <a href="#" onclick="showAdminLogin()" style="color:var(--fpg-error); font-size:0.85rem;">Admin Override</a>
+      </div>
     </div>
     <div id="duplicate-banner" class="banner banner-error">
       You are already checked in for this event. Duplicate registration is blocked.
@@ -706,5 +709,58 @@ if (record) {
       }
     }
   </script>
+  <div id="admin-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:12px; padding:24px; width:90%; max-width:360px; margin:auto;">
+    <h3 style="color:var(--fpg-green-dark); margin-bottom:16px;">Admin Login</h3>
+    <div id="admin-error" style="display:none; color:var(--fpg-error); font-size:0.85rem; margin-bottom:12px;"></div>
+    <input id="admin-username" type="text" placeholder="Username" style="margin-bottom:10px;">
+    <input id="admin-password" type="password" placeholder="Password" style="margin-bottom:16px;">
+    <button onclick="submitAdminLogin()" class="btn-submit" style="margin-top:0;">Login</button>
+    <button onclick="closeAdminLogin()" style="width:100%; margin-top:8px; background:none; border:none; color:var(--fpg-gray); cursor:pointer; padding:8px;">Cancel</button>
+  </div>
+</div>
+
+<script>
+  function showAdminLogin() {
+    document.getElementById('admin-modal').style.display = 'flex';
+  }
+  function closeAdminLogin() {
+    document.getElementById('admin-modal').style.display = 'none';
+  }
+  async function submitAdminLogin() {
+    const username = document.getElementById('admin-username').value.trim();
+    const password = document.getElementById('admin-password').value.trim();
+    const errorEl = document.getElementById('admin-error');
+    errorEl.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+
+      if (res.ok && (data.user.role === 'Administrator' || data.user.role === 'Leadership')) {
+        systemLockoutActive = false;
+        document.getElementById('lockout-banner').style.display = 'none';
+        closeAdminLogin();
+        populateRosterDropdown();
+        bindEvents();
+        loadPotTotals();
+        document.getElementById('checkin-form').style.display = 'block';
+      } else if (res.ok) {
+        errorEl.textContent = 'Access denied. Administrator or Leadership role required.';
+        errorEl.style.display = 'block';
+      } else {
+        errorEl.textContent = data.error || 'Invalid credentials.';
+        errorEl.style.display = 'block';
+      }
+    } catch (err) {
+      errorEl.textContent = 'Connection error. Please try again.';
+      errorEl.style.display = 'block';
+    }
+  }
+</script>
 </body>
 </html>
