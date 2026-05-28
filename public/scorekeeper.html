@@ -2402,11 +2402,10 @@ if (!isPar3) {
       
       }
 
-      if (isRoundAlreadySaved()) {
-        showToast('Round already saved.', 'success');
-        updateVerifyStatusBadges();
-        return;
-      }
+if (isRoundAlreadySaved()) {
+  showToast('Round already saved.', 'success');
+  return;
+}
 
       try {
         const finalizeBtn = document.getElementById('finalize-round-btn');
