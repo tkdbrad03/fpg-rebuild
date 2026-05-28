@@ -13,6 +13,7 @@
     { "src": "/api/auth/verify-token", "dest": "/api/auth/verify-token.js" },
     { "src": "/api/auth/forgot-password", "dest": "/api/auth/forgot-password.js" },
     { "src": "/api/auth/reset-password", "dest": "/api/auth/reset-password.js" },
+    { "src": "/api/member-handicaps", "dest": "/api/member-handicaps.js" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]
 }
