@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>FPG Admin Dashboard</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
   <style>
     :root {
       --green: #2D5016;
@@ -398,54 +399,64 @@
     <div class="tab active" onclick="switchTab('overview')">Overview</div>
     <div class="tab" onclick="switchTab('checkins')">Check-Ins</div>
     <div class="tab" onclick="switchTab('pairings')">Pairings</div>
-    
-    <div class="tab" onclick="window.location.href='/coordinator.html'">Coordinator</div>
+    <div class="tab" onclick="switchTab('payments')">Payments</div>
   </div>
 
   <main>
 
     <!-- ── OVERVIEW TAB ── -->
     <div class="tab-panel active" id="tab-overview">
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:12px; margin-top:4px;">
 
-    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="switchTab('checkins')">
-      <div style="font-size:2rem; margin-bottom:8px;"></div>
-      <div style="font-weight:700; color:var(--green-dark);">Check-Ins</div>
-      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">View &amp; manage players</div>
+      <!-- Event card -->
+      <div class="card" style="margin-bottom:16px; background:linear-gradient(135deg,var(--green),var(--green-dark)); color:#fff;">
+        <div class="card-body">
+          <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.5px; opacity:0.8; margin-bottom:4px;">Current Event</div>
+          <div id="ov-event-name" style="font-size:1.15rem; font-weight:700;">Loading...</div>
+          <div id="ov-event-meta" style="font-size:0.82rem; opacity:0.85; margin-top:3px;"></div>
+        </div>
+      </div>
+
+      <!-- Tool tiles -->
+      <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px;">
+
+        <div onclick="switchTab('checkins')" style="background:white; border-radius:16px; padding:20px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <svg style="width:32px;height:32px;margin-bottom:12px;color:#2D5016;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1e3a0f;">Check-Ins</div>
+          <div style="font-size:12px;color:#718096;">View &amp; manage players</div>
+        </div>
+
+        <div onclick="switchTab('pairings')" style="background:white; border-radius:16px; padding:20px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <svg style="width:32px;height:32px;margin-bottom:12px;color:#2D5016;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1e3a0f;">Pairings</div>
+          <div style="font-size:12px;color:#718096;">Build &amp; publish groups</div>
+        </div>
+
+        <div onclick="window.location.href='/coordinator.html'" style="background:white; border:2px solid #d4af37; border-radius:16px; padding:20px; cursor:pointer; box-shadow:0 2px 8px rgba(212,175,55,0.15); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <svg style="width:32px;height:32px;margin-bottom:12px;color:#d4af37;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+          <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1e3a0f;">Game Coordinator</div>
+          <div style="font-size:12px;color:#718096;">Payments, pots &amp; results</div>
+        </div>
+
+        <div onclick="window.location.href='/scorekeeper.html'" style="background:white; border-radius:16px; padding:20px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <svg style="width:32px;height:32px;margin-bottom:12px;color:#2D5016;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1e3a0f;">Scorekeeper</div>
+          <div style="font-size:12px;color:#718096;">Enter live scores</div>
+        </div>
+
+        <div onclick="window.location.href='/members.html'" style="background:white; border-radius:16px; padding:20px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <svg style="width:32px;height:32px;margin-bottom:12px;color:#2D5016;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1e3a0f;">Members</div>
+          <div style="font-size:12px;color:#718096;">Member directory</div>
+        </div>
+
+        <div onclick="window.location.href='/profile-edit.html'" style="background:white; border-radius:16px; padding:20px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+          <svg style="width:32px;height:32px;margin-bottom:12px;color:#2D5016;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <div style="font-size:15px;font-weight:600;margin-bottom:4px;color:#1e3a0f;">Settings</div>
+          <div style="font-size:12px;color:#718096;">Profile &amp; credentials</div>
+        </div>
+
+      </div>
     </div>
-
-    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="switchTab('pairings')">
-      <div style="font-size:2rem; margin-bottom:8px;"></div>
-      <div style="font-weight:700; color:var(--green-dark);">Pairings</div>
-      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Build &amp; publish groups</div>
-    </div>
-
-    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="window.location.href='/coordinator.html'">
-      <div style="font-size:2rem; margin-bottom:8px;"></div>
-      <div style="font-weight:700; color:var(--green-dark);">Game Coordinator</div>
-      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Payments, pots &amp; results</div>
-    </div>
-
-    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="window.location.href='/scorekeeper.html'">
-      <div style="font-size:2rem; margin-bottom:8px;"></div>
-      <div style="font-weight:700; color:var(--green-dark);">Scorekeeper</div>
-      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Enter live scores</div>
-    </div>
-
-    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="window.location.href='/members.html'">
-      <div style="font-size:2rem; margin-bottom:8px;"></div>
-      <div style="font-weight:700; color:var(--green-dark);">Members</div>
-      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Member directory</div>
-    </div>
-
-    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="window.location.href='/profile-edit.html'">
-      <div style="font-size:2rem; margin-bottom:8px;">⚙️</div>
-      <div style="font-weight:700; color:var(--green-dark);">Settings</div>
-      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Edit profile &amp; credentials</div>
-    </div>
-
-  </div>
-</div>
 
     <!-- ── CHECK-INS TAB ── -->
     <div class="tab-panel" id="tab-checkins">
@@ -467,13 +478,6 @@
           <label style="font-weight:600; color:var(--gray);">Start Time</label>
           <input type="time" id="start-time" value="10:00">
         </div>
-        <div class="tee-time-config">
-  <label style="font-weight:600; color:var(--gray);">Gaming Coordinator</label>
-  <select id="gc-select" onchange="gamingCoordinator = this.value" style="border:none; outline:none; font-size:0.85rem; color:var(--dark); background:transparent;">
-    <option value="">-- Select GC --</option>
-  </select>
-</div>
-        <button class="btn btn-ghost btn-sm" onclick="loadExistingPairings()">↓ Load Existing</button>
         <button class="btn btn-ghost btn-sm" onclick="addGroup()">+ Add Group</button>
         <button class="btn btn-ghost btn-sm" onclick="clearAllGroups()">Clear All</button>
         <button class="btn btn-gold" onclick="publishPairings()" id="publish-btn">Publish Pairings</button>
@@ -504,7 +508,23 @@
       </div>
     </div>
 
-    
+    <!-- ── PAYMENTS TAB ── -->
+    <div class="tab-panel" id="tab-payments">
+      <div class="payment-summary">
+        <div class="pay-sum-item"><div class="pay-sum-val" id="pay-total-players">0</div><div class="pay-sum-lbl">Players</div></div>
+        <div class="pay-sum-item"><div class="pay-sum-val" id="pay-collected">$0</div><div class="pay-sum-lbl">Collected</div></div>
+        <div class="pay-sum-item"><div class="pay-sum-val" id="pay-expected">$0</div><div class="pay-sum-lbl">Expected</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Payment Tracker</span>
+          <span style="font-size:0.78rem; color:var(--gray);">Tap ✓ to mark paid</span>
+        </div>
+        <div id="payment-list">
+          <div class="spinner-wrap"><div class="spinner"></div><div>Loading...</div></div>
+        </div>
+      </div>
+    </div>
 
   </main>
 
@@ -555,8 +575,6 @@
     let groups = [];
     let paymentStatus = {};
     let groupCounter = 0;
-    let memberHandicaps = {};
-    let gamingCoordinator = null; // single player name for entire round
 
     // ── Boot ──
     document.addEventListener('DOMContentLoaded', async () => {
@@ -572,8 +590,6 @@
       renderCheckinsList();
       renderPool();
       renderPayments();
-      await loadExistingPairings();
-      await Promise.all([loadCheckins(), loadMembers(), loadMemberHandicaps()]);
     }
 
     // ── Tab switching ──
@@ -722,7 +738,7 @@
     // ── PAIRINGS POOL ──
     function renderPool() {
       const el = document.getElementById('pool-list');
-      const assignedNames = new Set(groups.flatMap(g => g.players.map(p => typeof p === 'string' ? p : p.name)));
+      const assignedNames = new Set(groups.flatMap(g => g.players));
       const search = (document.getElementById('pool-search')?.value || '').toLowerCase();
 
       const players = allCheckins.filter(c =>
@@ -748,21 +764,14 @@
             ${assigned ? '<span style="font-size:0.7rem; color:var(--gray);">Assigned</span>' : '<span style="font-size:1rem; color:var(--green);">+</span>'}
           </div>`;
       }).join('');
-    updateGCDropdown();
-}
-function updateGCDropdown() {
-  const sel = document.getElementById('gc-select');
-  const current = sel.value;
-  sel.innerHTML = '<option value="">-- Select GC --</option>' +
-    allCheckins.map(c => `<option value="${c.playerName}" ${c.playerName === current ? 'selected' : ''}>${c.playerName}</option>`).join('');
-  if (current) sel.value = current;
-}
+    }
+
     function filterPool() { renderPool(); }
 
     // ── GROUPS ──
     function addGroup() {
       groupCounter++;
-      groups.push({ id: groupCounter, players: [], teeTime: calcTeeTime(groupCounter - 1), sk1: null, sk2: null });
+      groups.push({ id: groupCounter, players: [], teeTime: calcTeeTime(groupCounter - 1) });
       renderGroups();
       renderPool();
     }
@@ -784,20 +793,17 @@ function updateGCDropdown() {
       if (!target) target = groups.find(g => g.players.length < 4);
       if (!target) { showToast('All groups are full (4 players max). Add a new group.', 'error'); return; }
       if (groups.some(g => g.players.includes(name))) { return; }
-      target.players.push({ name, handicap: memberHandicaps[name] || null, isGuest: false });
+      target.players.push(name);
       renderGroups();
       renderPool();
     }
 
-function removeFromGroup(groupId, playerName) {
-  const group = groups.find(g => g.id === groupId);
-  if (group) group.players = group.players.filter(p => {
-    const n = typeof p === 'string' ? p : p.name;
-    return n !== playerName;
-  });
-  renderGroups();
-  renderPool();
-}
+    function removeFromGroup(groupId, playerName) {
+      const group = groups.find(g => g.id === groupId);
+      if (group) group.players = group.players.filter(p => p !== playerName);
+      renderGroups();
+      renderPool();
+    }
 
     function removeGroup(groupId) {
       groups = groups.filter(g => g.id !== groupId);
@@ -836,42 +842,11 @@ function removeFromGroup(groupId, playerName) {
           <div class="group-players-list">
             ${g.players.length === 0
               ? `<div class="group-empty">Click a player from the pool to assign here.</div>`
-: g.players.map((p, pIdx) => {
-    const name = typeof p === 'string' ? p : p.name;
-    const isGuest = typeof p === 'object' && p.isGuest;
-    const hcp = typeof p === 'object' ? p.handicap : memberHandicaps[name];
-    const isSK1 = g.sk1 === name;
-    const isSK2 = g.sk2 === name;
-    return `
-      <div class="group-player-chip">
-        <div style="flex:1;">
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span>${name}</span>
-            ${isSK1 ? '<span class="badge" style="background:#fff3cd; color:#856404;">SK1</span>' : ''}
-            ${isSK2 ? '<span class="badge" style="background:#fff3cd; color:#856404;">SK2</span>' : ''}
-            ${gamingCoordinator === name ? '<span class="badge" style="background:#cfe2ff; color:#084298;">GC</span>' : ''}
-          </div>
-          ${isGuest ? `
-            <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
-              <span style="font-size:0.72rem; color:var(--gray);">HCP:</span>
-              <input type="number" step="0.1" min="0" max="54"
-                style="width:60px; padding:2px 6px; border:1px solid var(--line); border-radius:4px; font-size:0.78rem;"
-                placeholder="—" value="${hcp || ''}"
-                onchange="updateGuestHandicap(${g.id}, '${name.replace(/'/g,"\\'")}', this.value)">
-            </div>`
-          : `<div style="font-size:0.72rem; color:var(--gray); margin-top:2px;">HCP: ${hcp ?? '—'}</div>`}
-          <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
-            <select style="font-size:0.72rem; padding:2px 6px; border:1px solid var(--line); border-radius:4px;"
-              onchange="assignSK(${g.id}, '${name.replace(/'/g,"\\'")}', this.value)">
-              <option value="">No SK role</option>
-              <option value="sk1" ${isSK1 ? 'selected' : ''}>SK1 (Primary)</option>
-              <option value="sk2" ${isSK2 ? 'selected' : ''}>SK2 (Backup)</option>
-            </select>
-          </div>
-        </div>
-        <button class="chip-remove" onclick="removeFromGroup(${g.id}, '${name.replace(/'/g,"\\'")}')">×</button>
-      </div>`;
-  }).join('')
+              : g.players.map(name => `
+                  <div class="group-player-chip">
+                    <span>${name}</span>
+                    <button class="chip-remove" onclick="removeFromGroup(${g.id}, '${name.replace(/'/g,"\\'")}')">×</button>
+                  </div>`).join('')
             }
           </div>
           <div class="group-footer">
@@ -880,17 +855,6 @@ function removeFromGroup(groupId, playerName) {
           </div>
         </div>`).join('');
     }
-    function assignSK(groupId, playerName, role) {
-  const group = groups.find(g => g.id === groupId);
-  if (!group) return;
-  // Clear this player from any existing SK role in this group
-  if (group.sk1 === playerName) group.sk1 = null;
-  if (group.sk2 === playerName) group.sk2 = null;
-  // Assign new role
-  if (role === 'sk1') group.sk1 = playerName;
-  if (role === 'sk2') group.sk2 = playerName;
-  renderGroups();
-}
 
     async function publishPairings() {
       if (groups.length === 0) { showToast('No groups to publish.', 'error'); return; }
@@ -907,13 +871,12 @@ function removeFromGroup(groupId, playerName) {
         groups: groups.map((g, idx) => ({
           groupNumber: idx + 1,
           teeTime: g.teeTime,
-          players: g.players.map(p => {
-  const name = typeof p === 'string' ? p : p.name;
-  const handicap = (typeof p === 'object' && p.handicap) ? p.handicap : (memberHandicaps[name] || 0);
-  return { name, handicap, quota: 0, strokes: 0 };
-}),
-          scorekeepers: [g.sk1, g.sk2].filter(Boolean),
-gamingCoordinator: gamingCoordinator || null
+          players: g.players.map(name => {
+            const checkin = allCheckins.find(c => c.playerName === name);
+            return { name, handicap: 0, quota: 0, strokes: 0 };
+          }),
+          scorekeepers: [],
+          gamingCoordinator: null
         }))
       };
 
@@ -936,12 +899,6 @@ gamingCoordinator: gamingCoordinator || null
         btn.textContent = 'Publish Pairings';
       }
     }
-    function updateGuestHandicap(groupId, playerName, value) {
-  const group = groups.find(g => g.id === groupId);
-  if (!group) return;
-  const player = group.players.find(p => (typeof p === 'string' ? p : p.name) === playerName);
-  if (player && typeof player === 'object') player.handicap = parseFloat(value) || null;
-}
 
     // ── PAYMENTS ──
     function renderPayments() {
@@ -1052,43 +1009,6 @@ gamingCoordinator: gamingCoordinator || null
         showToast('Connection error.', 'error');
       }
     }
-    async function loadExistingPairings() {
-  try {
-    const res = await fetch('/api/get-pairings');
-    const data = await res.json();
-    if (!data.published || data.groups.length === 0) return;
-
-    groups = [];
-    groupCounter = 0;
-
-    data.groups.forEach(group => {
-      groupCounter++;
-      const players = group.players.map(p => ({
-        name: p.name,
-        handicap: p.handicap || memberHandicaps[p.name] || null,
-        isGuest: false
-      }));
-      const sk1 = group.players.find(p => p.isScorekeeper)?.name || null;
-      const sk2 = group.players.filter(p => p.isScorekeeper)?.[1]?.name || null;
-      const gc = group.players.find(p => p.isGamingCoord)?.name || null;
-      if (gc) gamingCoordinator = gc;
-
-      groups.push({
-        id: groupCounter,
-        players,
-        teeTime: group.teeTime,
-        sk1,
-        sk2
-      });
-    });
-
-    renderGroups();
-    renderPool();
-    showToast('Existing pairings loaded', 'success');
-  } catch(e) {
-    showToast('Could not load existing pairings', 'error');
-  }
-}
 
     // ── Toast ──
     function showToast(msg, type = '') {
@@ -1097,13 +1017,6 @@ gamingCoordinator: gamingCoordinator || null
       t.className = `toast ${type} show`;
       setTimeout(() => { t.classList.remove('show'); }, 3500);
     }
-    async function loadMemberHandicaps() {
-  try {
-    const res = await fetch('/api/member-handicaps');
-    const data = await res.json();
-    data.forEach(m => { memberHandicaps[m.name] = m.handicap; });
-  } catch(e) { memberHandicaps = {}; }
-}
   </script>
 
 </body>
