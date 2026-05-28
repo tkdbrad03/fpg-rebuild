@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Game Coordinator - FPG</title>
+  <script src="/js/courses.js"></script>
+  <style>
+    :root {
+      --green: #2D5016;
+      --green-dark: #1e3a0f;
+      --gold: #d4af37;
+      --light: #f5f7f4;
+      --white: #ffffff;
+      --dark: #1a1a1a;
+      --gray: #718096;
+      --line: #e5e7eb;
+      --error: #e53e3e;
+      --success: #38a169;
+      --warning: #d97706;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--light); color: var(--dark); padding-bottom: 60px; }
+
+    /* ── Header ── */
+    header {
+      background: var(--green-dark);
+      color: var(--white);
+      border-bottom: 4px solid var(--gold);
+      padding: 16px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
+    header .event-info { font-size: 0.82rem; opacity: 0.8; margin-top: 4px; }
+    .back-link {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    main { max-width: 960px; margin: 0 auto; padding: 16px; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-body { padding: 16px 18px; }
+
+    /* ── Stat pills ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px,1fr)); gap: 10px; margin-bottom: 16px; }
+    .stat-pill { background: var(--white); border-radius: 10px; padding: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .stat-pill .val { font-size: 1.4rem; font-weight: 800; color: var(--green); }
+    .stat-pill .lbl { font-size: 0.68rem; color: var(--gray); text-transform: uppercase; margin-top: 2px; }
+
+    /* ── Pot totals ── */
+    .pot-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pot-item { flex: 1; min-width: 80px; background: var(--light); border-radius: 8px; padding: 10px; text-align: center; }
+    .pot-item .pot-amt { font-size: 1.1rem; font-weight: 800; color: var(--green); }
+    .pot-item .pot-lbl { font-size: 0.68rem; color: var(--gray); text-transform: uppercase; margin-top: 2px; }
+    .pot-item .pot-cnt { font-size: 0.68rem; color: var(--gray); }
+
+    /* ── Payment table ── */
+    .pay-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      align-items: center;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--line);
+      gap: 12px;
+      font-size: 0.88rem;
+    }
+    .pay-row:last-child { border-bottom: none; }
+    .pay-name { font-weight: 600; }
+    .pay-games { font-size: 0.75rem; color: var(--gray); margin-top: 2px; }
+    .pay-amt { font-weight: 700; color: var(--green); }
+    .pay-method { font-size: 0.75rem; color: var(--gray); }
+    .toggle-paid {
+      width: 34px; height: 34px; border-radius: 8px; border: 2px solid var(--line);
+      background: var(--white); cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+    }
+    .toggle-paid.paid { background: var(--success); border-color: var(--success); color: var(--white); }
+
+    /* ── Results tables ── */
+    .results-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .results-table th { text-align: left; padding: 8px 10px; background: var(--light); color: var(--gray); font-size: 0.72rem; text-transform: uppercase; }
+    .results-table td { padding: 10px; border-bottom: 1px solid var(--line); }
+    .results-table tr:last-child td { border-bottom: none; }
+    .place { font-weight: 800; }
+    .place.gold { color: #b8860b; }
+    .place.silver { color: #718096; }
+    .place.bronze { color: #b7622b; }
+    .amount { font-weight: 700; color: var(--green); }
+    .waiting { text-align: center; padding: 24px; color: var(--gray); font-size: 0.88rem; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 8px; font-size: 0.82rem;
+      font-weight: 600; cursor: pointer; border: none; transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--green); color: var(--white); }
+    .btn-gold { background: var(--gold); color: #1a1a1a; }
+    .btn-ghost { background: var(--light); color: var(--dark); border: 1px solid var(--line); }
+    .btn-sent { background: var(--success); color: var(--white); }
+    .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+
+    /* ── CTP grid ── */
+    .ctp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 12px; }
+    .ctp-hole { background: var(--light); border-radius: 10px; padding: 14px; }
+    .ctp-hole.has-winner { background: #f0fff4; border: 1px solid #c6f6d5; }
+    .ctp-hole-num { font-size: 0.78rem; color: var(--gray); text-transform: uppercase; font-weight: 600; }
+    .ctp-winner-display { font-size: 1rem; font-weight: 700; color: var(--green-dark); margin: 6px 0; }
+    .ctp-hole select {
+      width: 100%; padding: 8px; border: 1px solid var(--line);
+      border-radius: 6px; font-size: 0.85rem; margin-top: 6px; outline: none;
+    }
+
+    /* ── Blind Draw ── */
+    .blind-slot {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px; border-radius: 8px; margin-bottom: 8px;
+    }
+    .blind-slot.regular { background: var(--light); }
+    .blind-slot.squirrel { background: #fffbeb; border: 1px solid #fbbf24; }
+    .blind-slot-label { min-width: 140px; font-weight: 600; font-size: 0.88rem; }
+    .blind-slot select {
+      flex: 1; padding: 8px; border: 1px solid var(--line);
+      border-radius: 6px; font-size: 0.85rem; outline: none;
+    }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .badge-allin { background: var(--green); color: var(--white); }
+    .badge-indiv { background: #e8f3dd; color: var(--green-dark); }
+    .badge-zelle { background: #dbeafe; color: #1e40af; }
+    .badge-cashapp { background: #d1fae5; color: #065f46; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--dark); color: var(--white); padding: 12px 24px;
+      border-radius: 24px; font-size: 0.88rem; font-weight: 600;
+      z-index: 999; transition: transform 0.3s; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--error); }
+
+    /* ── Spinner ── */
+    .spinner-wrap { text-align: center; padding: 32px; color: var(--gray); }
+    .spinner { width: 28px; height: 28px; border: 3px solid rgba(0,0,0,0.1); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header style="position:relative;">
+    <a href="/admin.html" class="back-link">← Back</a>
+    <h1>🏌️ Game Coordinator</h1>
+    <div class="event-info" id="event-info">Loading event...</div>
+  </header>
+
+  <main>
+
+    <!-- ── PAYMENT TRACKING ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">💰 Payment Tracking</span>
+        <span style="font-size:0.75rem; color:var(--gray);">Tap ✓ to mark paid</span>
+      </div>
+      <div class="card-body" style="padding-top:12px; padding-bottom:0;">
+        <div class="stats-grid" style="margin-bottom:12px;">
+          <div class="stat-pill"><div class="val" id="pay-total">0</div><div class="lbl">Players</div></div>
+          <div class="stat-pill"><div class="val" id="pay-paid">0</div><div class="lbl">Paid</div></div>
+          <div class="stat-pill"><div class="val" id="pay-expected">$0</div><div class="lbl">Expected</div></div>
+          <div class="stat-pill"><div class="val" id="pay-collected">$0</div><div class="lbl">Collected</div></div>
+        </div>
+      </div>
+      <div id="payment-list">
+        <div class="spinner-wrap"><div class="spinner"></div><div>Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- ── POT TOTALS ── -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">🏆 Current Pot Totals</span></div>
+      <div class="card-body">
+        <div class="pot-grid">
+          <div class="pot-item"><div class="pot-amt" id="pot-champion">$0</div><div class="pot-lbl">Champion</div><div class="pot-cnt" id="cnt-champion">0 players</div></div>
+          <div class="pot-item"><div class="pot-amt" id="pot-quota">$0</div><div class="pot-lbl">Quota</div><div class="pot-cnt" id="cnt-quota">0 players</div></div>
+          <div class="pot-item"><div class="pot-amt" id="pot-skins">$0</div><div class="pot-lbl">Skins</div><div class="pot-cnt" id="cnt-skins">0 players</div></div>
+          <div class="pot-item"><div class="pot-amt" id="pot-ctp">$0</div><div class="pot-lbl">CTP</div><div class="pot-cnt" id="cnt-ctp">0 players</div></div>
+          <div class="pot-item"><div class="pot-amt" id="pot-blind">$0</div><div class="pot-lbl">Blind Draw</div><div class="pot-cnt" id="cnt-blind">0 players</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CHAMPION ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🥇 Champion of the Day</span>
+        <span class="badge badge-indiv">Auto-Calculated</span>
+      </div>
+      <div id="champion-content">
+        <div class="waiting">Waiting for scores...</div>
+      </div>
+    </div>
+
+    <!-- ── QUOTA ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📊 Quota Game</span>
+        <span class="badge badge-indiv">Auto-Calculated</span>
+      </div>
+      <div id="quota-content">
+        <div class="waiting">Waiting for scores...</div>
+      </div>
+    </div>
+
+    <!-- ── SKINS ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🦎 Skins</span>
+        <span class="badge badge-indiv">Auto-Calculated</span>
+      </div>
+      <div class="card-body">
+        <div id="skins-summary" style="display:none; font-size:0.85rem; color:var(--gray); margin-bottom:12px;">
+          Skins Hit: <strong id="skins-hit">0</strong> &nbsp;|&nbsp;
+          Value/Skin: <strong id="skin-value">$0</strong> &nbsp;|&nbsp;
+          Ties (Push): <strong id="skins-ties">0</strong>
+        </div>
+        <div id="skins-content">
+          <div class="waiting">Waiting for scores...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CTP ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">📍 Closest to Pin</span>
+        <button class="btn btn-gold btn-sm" onclick="calculateCTPPayouts()">Calculate Payouts</button>
+      </div>
+      <div class="card-body">
+        <p style="font-size:0.78rem; color:var(--gray); margin-bottom:12px;">Winners sync automatically from scorekeepers. Use override to correct.</p>
+        <div class="ctp-grid" id="ctp-grid">
+          <div class="waiting">Loading par 3 holes...</div>
+        </div>
+        <div id="ctp-payouts" style="display:none; margin-top:16px;">
+          <table class="results-table">
+            <thead><tr><th>Hole</th><th>Winner</th><th>Payout</th><th>Send To</th><th>Status</th></tr></thead>
+            <tbody id="ctp-payout-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BLIND DRAW ── -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">🎲 Blind Draw</span>
+        <button class="btn btn-primary btn-sm" onclick="saveBlindDrawWinners()">Save Winners</button>
+      </div>
+      <div class="card-body">
+        <div id="blind-info" style="font-size:0.85rem; color:var(--gray); margin-bottom:12px;"></div>
+        <div id="blind-slots"></div>
+        <div id="blind-participants" style="font-size:0.78rem; color:var(--gray); margin-top:12px;"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── Auth guard ──
+    const _token = localStorage.getItem('fpg_token');
+    const _user = JSON.parse(localStorage.getItem('fpg_user') || '{}');
+    if (!_token || !_user.role) { window.location.href = '/login.html'; }
+    if (_user.role === 'Member') { window.location.href = '/dashboard.html'; }
+
+    // ── Buy-in amounts ──
+    const BUYINS = { champion: 5, quota: 5, skins: 10, ctp: 5, blind: 5 };
+
+    // ── Payout tiers ──
+    const PAYOUT_TIERS = {
+      small:  { places: 2, splits: [0.60, 0.40] },       // 1-4 players
+      medium: { places: 3, splits: [0.50, 0.30, 0.20] }, // 5-8 players
+      large:  { places: 4, splits: [0.40, 0.25, 0.20, 0.15] } // 9+
+    };
+
+    // ── State ──
+    let eventData = {};
+    let checkinData = [];
+    let scoresData = [];
+    let pairingsData = [];
+    let membersData = [];
+    let courseData = null;
+    let ctpWinners = {};
+    let blindDrawWinners = [];
+    let paymentStatus = {};
+
+    // ── Boot ──
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadEvent();
+      await Promise.all([loadCheckins(), loadScores(), loadPairings(), loadMembers()]);
+      loadPaymentStatus();
+      renderPayments();
+      calculatePots();
+      calculateChampion();
+      calculateQuota();
+      calculateSkins();
+      setupCTP();
+      setupBlindDraw();
+
+      // Poll for new scores every 30 seconds
+      setInterval(async () => {
+        await loadScores();
+        calculateChampion();
+        calculateQuota();
+        calculateSkins();
+      }, 30000);
+
+      // Poll CTP every 10 seconds
+      setInterval(fetchAndRenderCTP, 10000);
+    });
+
+    // ── Load event from API ──
+    async function loadEvent() {
+      try {
+        const res = await fetch('/api/current-event');
+        const data = await res.json();
+        eventData.eventString = data.eventString || '';
+        eventData.date = data.slashDate || '';
+        eventData.isoDate = data.date || '';
+        eventData.course = eventData.eventString.replace('Florida Players - ', '').split(',')[0].trim();
+        document.getElementById('event-info').textContent =
+          [eventData.course, eventData.date].filter(Boolean).join(' · ');
+
+        // Load course data from courses.js
+        if (typeof FPG_COURSES !== 'undefined') {
+          courseData = Object.values(FPG_COURSES).find(c =>
+            (c.aliases || []).some(a => a.toLowerCase().includes(eventData.course.toLowerCase())) ||
+            eventData.course.toLowerCase().includes((Object.keys(FPG_COURSES).find(k => FPG_COURSES[k] === c) || '').toLowerCase())
+          );
+          // Try direct key match
+          if (!courseData) {
+            const key = Object.keys(FPG_COURSES).find(k =>
+              k.toLowerCase().includes(eventData.course.toLowerCase()) ||
+              eventData.course.toLowerCase().includes(k.toLowerCase().split(' ')[0])
+            );
+            if (key) courseData = FPG_COURSES[key];
+          }
+        }
+      } catch(e) {
+        document.getElementById('event-info').textContent = 'Error loading event';
+      }
+    }
+
+    // ── Load checkins via API ──
+    async function loadCheckins() {
+      try {
+        const res = await fetch(`/api/admin-checkins?event=${encodeURIComponent(eventData.eventString)}`);
+        const rows = await res.json();
+        checkinData = rows.map(r => {
+          const isAllIn = r.quickSelection && r.quickSelection.includes('ALL IN');
+          const ind = r.individualGames || '';
+          return {
+            player: r.playerName,
+            isAllIn,
+            gamesDisplay: isAllIn ? 'ALL IN' : ind,
+            totalPayment: parseInt((r.totalPayment || '').replace('$','')) || (isAllIn ? 30 : 0),
+            games: {
+              champion: isAllIn || ind.includes('Champion'),
+              quota: isAllIn || ind.includes('Quota'),
+              skins: isAllIn || ind.includes('Skins'),
+              ctp: isAllIn || ind.includes('Closest') || ind.includes('CTP'),
+              blind: isAllIn || ind.includes('Blind')
+            }
+          };
+        });
+      } catch(e) { checkinData = []; }
+    }
+
+    // ── Load scores via API ──
+    async function loadScores() {
+      try {
+        const params = new URLSearchParams();
+        if (eventData.course) params.set('course', eventData.course);
+        if (eventData.isoDate) params.set('date', eventData.isoDate);
+        const res = await fetch(`/api/get-scores?${params}`);
+        const rows = await res.json();
+        // Deduplicate — keep latest entry per player+hole
+        const map = {};
+        rows.forEach(r => {
+          const key = `${r.playerName}_${r.hole}`;
+          map[key] = r;
+        });
+        scoresData = Object.values(map).filter(r => r.score > 0);
+      } catch(e) { scoresData = []; }
+    }
+
+    // ── Load pairings via API ──
+    async function loadPairings() {
+      try {
+        const res = await fetch('/api/get-pairings');
+        const data = await res.json();
+        pairingsData = (data.groups || []).flatMap(g =>
+          g.players.map(p => ({ player: p.name, handicap: p.handicap || 0, quota: p.quota || 0 }))
+        );
+      } catch(e) { pairingsData = []; }
+    }
+
+    // ── Load members for payment info ──
+    async function loadMembers() {
+      try {
+        const res = await fetch('/api/member-handicaps');
+        const data = await res.json();
+        membersData = data;
+      } catch(e) { membersData = []; }
+    }
+
+    // ── Payment tracking ──
+    function getPaymentKey() {
+      return `fpg_payments_${eventData.course}_${eventData.date}`.replace(/\s/g,'_');
+    }
+    function loadPaymentStatus() {
+      const saved = localStorage.getItem(getPaymentKey());
+      if (saved) paymentStatus = JSON.parse(saved);
+    }
+    function savePaymentStatus() {
+      localStorage.setItem(getPaymentKey(), JSON.stringify(paymentStatus));
+    }
+    function togglePayment(playerName) {
+      paymentStatus[playerName] = !paymentStatus[playerName];
+      savePaymentStatus();
+      renderPayments();
+    }
+
+    function renderPayments() {
+      const el = document.getElementById('payment-list');
+      if (checkinData.length === 0) {
+        el.innerHTML = '<div class="waiting">No check-ins yet.</div>';
+        return;
+      }
+
+      let totalExpected = 0, totalCollected = 0, paidCount = 0;
+
+      el.innerHTML = checkinData.map(c => {
+        const paid = paymentStatus[c.player] || false;
+        totalExpected += c.totalPayment;
+        if (paid) { totalCollected += c.totalPayment; paidCount++; }
+        return `
+          <div class="pay-row">
+            <div>
+              <div class="pay-name">${c.player}</div>
+              <div class="pay-games">${c.gamesDisplay}</div>
+            </div>
+            <div class="pay-amt">$${c.totalPayment}</div>
+            <div class="pay-method"></div>
+            <button class="toggle-paid ${paid ? 'paid' : ''}"
+              onclick="togglePayment('${c.player.replace(/'/g,"\\'")}')">
+              ${paid ? '✓' : ''}
+            </button>
+          </div>`;
+      }).join('');
+
+      document.getElementById('pay-total').textContent = checkinData.length;
+      document.getElementById('pay-paid').textContent = paidCount;
+      document.getElementById('pay-expected').textContent = `$${totalExpected}`;
+      document.getElementById('pay-collected').textContent = `$${totalCollected}`;
+    }
+
+    // ── Pot totals ──
+    function calculatePots() {
+      const games = ['champion','quota','skins','ctp','blind'];
+      games.forEach(game => {
+        const count = checkinData.filter(c => c.games[game]).length;
+        const pot = count * BUYINS[game];
+        document.getElementById(`pot-${game}`).textContent = `$${pot}`;
+        document.getElementById(`cnt-${game}`).textContent = `${count} player${count !== 1 ? 's' : ''}`;
+      });
+    }
+
+    function getTier(count) {
+      if (count <= 4) return PAYOUT_TIERS.small;
+      if (count <= 8) return PAYOUT_TIERS.medium;
+      return PAYOUT_TIERS.large;
+    }
+
+    // ── Player stableford totals ──
+    function getPlayerTotals() {
+      const totals = {};
+      scoresData.forEach(s => {
+        if (!totals[s.playerName]) totals[s.playerName] = { points: 0, strokes: 0, holes: new Set(), holeScores: {} };
+        if (!totals[s.playerName].holes.has(s.hole)) {
+          totals[s.playerName].points += s.stablefordPoints;
+          totals[s.playerName].strokes += s.score;
+          totals[s.playerName].holes.add(s.hole);
+          totals[s.playerName].holeScores[s.hole] = s.score;
+        }
+      });
+      return totals;
+    }
+
+    // ── Champion ──
+    function calculateChampion() {
+      const el = document.getElementById('champion-content');
+      const totals = getPlayerTotals();
+      const champPlayers = checkinData.filter(c => c.games.champion).map(c => c.player);
+      const pot = champPlayers.length * BUYINS.champion;
+
+      const results = Object.entries(totals)
+        .filter(([name]) => champPlayers.some(p => namesMatch(p, name)))
+        .map(([name, d]) => ({ name, points: d.points, holesPlayed: d.holes.size }))
+        .filter(p => p.holesPlayed >= 1)
+        .sort((a, b) => b.points - a.points);
+
+      if (results.length === 0) {
+        el.innerHTML = '<div class="waiting">Waiting for scores...</div>';
+        return;
+      }
+
+      const winner = results[0];
+      el.innerHTML = `
+        <table class="results-table">
+          <thead><tr><th>Place</th><th>Player</th><th>Points</th><th>Payout</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="place gold">1st</td>
+              <td>${winner.name}</td>
+              <td>${winner.points} pts</td>
+              <td class="amount">$${pot.toFixed(2)}</td>
+              <td>${renderSendBtn('champion', winner.name, pot)}</td>
+            </tr>
+            ${results.slice(1,4).map((p,i) => `
+              <tr>
+                <td class="place ${['silver','bronze',''][i]}">${['2nd','3rd','4th'][i]}</td>
+                <td>${p.name}</td><td>${p.points} pts</td><td>—</td><td></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    // ── Quota ──
+    function calculateQuota() {
+      const el = document.getElementById('quota-content');
+      const totals = getPlayerTotals();
+      const quotaPlayers = checkinData.filter(c => c.games.quota).map(c => c.player);
+      const pot = quotaPlayers.length * BUYINS.quota;
+      const tier = getTier(quotaPlayers.length);
+
+      const results = Object.entries(totals)
+        .filter(([name]) => quotaPlayers.some(p => namesMatch(p, name)))
+        .map(([name, d]) => {
+          const pairing = pairingsData.find(p => namesMatch(p.player, name));
+          const quota = pairing?.quota || 0;
+          return { name, points: d.points, quota, plusMinus: d.points - quota, holesPlayed: d.holes.size };
+        })
+        .filter(p => p.holesPlayed >= 1)
+        .sort((a, b) => b.plusMinus - a.plusMinus);
+
+      if (results.length === 0) {
+        el.innerHTML = '<div class="waiting">Waiting for scores...</div>';
+        return;
+      }
+
+      const placeLabels = ['1st','2nd','3rd','4th'];
+      const placeClasses = ['gold','silver','bronze',''];
+
+      el.innerHTML = `
+        <table class="results-table">
+          <thead><tr><th>Place</th><th>Player</th><th>Points</th><th>Quota</th><th>+/-</th><th>Payout</th><th>Status</th></tr></thead>
+          <tbody>
+            ${results.slice(0, tier.places).map((p, i) => {
+              const payout = Math.round(pot * tier.splits[i] * 100) / 100;
+              const pm = p.plusMinus >= 0 ? `+${p.plusMinus}` : p.plusMinus;
+              return `<tr>
+                <td class="place ${placeClasses[i]}">${placeLabels[i]}</td>
+                <td>${p.name}</td><td>${p.points}</td><td>${p.quota}</td>
+                <td style="color:${p.plusMinus>=0?'var(--success)':'var(--error)'}; font-weight:700;">${pm}</td>
+                <td class="amount">$${payout.toFixed(2)}</td>
+                <td>${renderSendBtn('quota_'+i, p.name, payout)}</td>
+              </tr>`;
+            }).join('')}
+            ${results.slice(tier.places).map(p => {
+              const pm = p.plusMinus >= 0 ? `+${p.plusMinus}` : p.plusMinus;
+              return `<tr>
+                <td class="place">—</td><td>${p.name}</td><td>${p.points}</td>
+                <td>${p.quota}</td>
+                <td style="color:${p.plusMinus>=0?'var(--success)':'var(--error)'}; font-weight:700;">${pm}</td>
+                <td>—</td><td></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    // ── Skins ──
+    function calculateSkins() {
+      const el = document.getElementById('skins-content');
+      const skinsPlayers = checkinData.filter(c => c.games.skins).map(c => c.player);
+      const pot = skinsPlayers.length * BUYINS.skins;
+
+      // Build net scores per hole
+      const holeScores = {};
+      for (let h = 1; h <= 18; h++) holeScores[h] = [];
+
+      scoresData.forEach(s => {
+        if (!skinsPlayers.some(p => namesMatch(p, s.playerName))) return;
+        const pairing = pairingsData.find(p => namesMatch(p.player, s.playerName));
+        const hcp = Math.min(Math.round(pairing?.handicap || 0), 18);
+        const strokeOnHole = getStrokesOnHole(s.hole, hcp);
+        holeScores[s.hole].push({ player: s.playerName, gross: s.score, net: s.score - strokeOnHole });
+      });
+
+      const skins = [];
+      let skinsHit = 0, ties = 0;
+
+      for (let h = 1; h <= 18; h++) {
+        const scores = holeScores[h];
+        if (scores.length === 0) continue;
+        const minNet = Math.min(...scores.map(s => s.net));
+        const winners = scores.filter(s => s.net === minNet);
+        if (winners.length === 1) { skins.push({ hole: h, winner: winners[0].player, net: minNet, tie: false }); skinsHit++; }
+        else { skins.push({ hole: h, winner: null, tiedPlayers: winners.map(w => w.player), net: minNet, tie: true }); ties++; }
+      }
+
+      if (skins.length === 0) {
+        el.innerHTML = '<div class="waiting">Waiting for scores...</div>';
+        document.getElementById('skins-summary').style.display = 'none';
+        return;
+      }
+
+      const skinValue = skinsHit > 0 ? pot / skinsHit : 0;
+      document.getElementById('skins-summary').style.display = 'block';
+      document.getElementById('skins-hit').textContent = skinsHit;
+      document.getElementById('skin-value').textContent = `$${skinValue.toFixed(2)}`;
+      document.getElementById('skins-ties').textContent = ties;
+
+      el.innerHTML = `
+        <table class="results-table">
+          <thead><tr><th>Hole</th><th>Winner</th><th>Net</th><th>Payout</th><th>Status</th></tr></thead>
+          <tbody>
+            ${skins.map(s => s.tie
+              ? `<tr><td>Hole ${s.hole}</td><td style="color:var(--gray);">Tie (${s.tiedPlayers.map(p=>p.split(' ')[0]).join(', ')}) — Push</td><td>${s.net}</td><td>—</td><td></td></tr>`
+              : `<tr><td>Hole ${s.hole}</td><td class="amount">${s.winner}</td><td>${s.net}</td><td class="amount">$${skinValue.toFixed(2)}</td><td>${renderSendBtn('skin_h'+s.hole, s.winner, skinValue)}</td></tr>`
+            ).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function getStrokesOnHole(hole, totalStrokes) {
+      if (!courseData || !courseData.holes) {
+        // Fallback: distribute evenly
+        return hole <= totalStrokes ? 1 : 0;
+      }
+      const holeData = courseData.holes[hole - 1];
+      const hcpRank = holeData?.hcp_m || hole;
+      return hcpRank <= totalStrokes ? 1 : 0;
+    }
+
+    // ── CTP ──
+    async function fetchAndRenderCTP() {
+      if (!eventData.isoDate || !eventData.course) return;
+      try {
+        const res = await fetch(`/api/submit-ctp?roundDate=${eventData.isoDate}&courseName=${encodeURIComponent(eventData.course)}`);
+        const data = await res.json();
+        if (data.success && data.data) {
+          data.data.forEach(c => { if (c.winner) ctpWinners[c.hole] = c.winner; });
+        }
+      } catch(e) {}
+      renderCTPGrid();
+    }
+
+    function setupCTP() {
+      fetchAndRenderCTP();
+    }
+
+    function renderCTPGrid() {
+      const grid = document.getElementById('ctp-grid');
+      const par3Holes = [];
+
+      if (courseData && courseData.holes) {
+        courseData.holes.forEach((h, i) => { if (h.par_m === 3) par3Holes.push(i + 1); });
+      } else {
+        par3Holes.push(3, 6, 12, 15);
+      }
+
+      const allPlayers = checkinData.map(c => c.player);
+
+      grid.innerHTML = par3Holes.map(hole => {
+        const winner = ctpWinners[hole] || '';
+        return `
+          <div class="ctp-hole ${winner ? 'has-winner' : ''}" id="ctp-hole-${hole}">
+            <div class="ctp-hole-num">Hole ${hole} (Par 3)</div>
+            <div class="ctp-winner-display">${winner || '—'}</div>
+            <select onchange="setCTPWinner(${hole}, this.value)">
+              <option value="">-- Override --</option>
+              ${allPlayers.map(p => `<option value="${p}" ${p === winner ? 'selected' : ''}>${p}</option>`).join('')}
+            </select>
+          </div>`;
+      }).join('');
+    }
+
+    async function setCTPWinner(hole, player) {
+      ctpWinners[hole] = player || undefined;
+      if (!player) delete ctpWinners[hole];
+      renderCTPGrid();
+      try {
+        await fetch('/api/submit-ctp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            roundDate: eventData.isoDate,
+            courseName: eventData.course,
+            hole,
+            winner: player || '',
+            scorekeeperName: _user.name || 'Coordinator'
+          })
+        });
+      } catch(e) {}
+    }
+
+    function calculateCTPPayouts() {
+      const winners = Object.entries(ctpWinners).filter(([,v]) => v);
+      if (winners.length === 0) { showToast('No CTP winners selected yet.', 'error'); return; }
+      const ctpCount = checkinData.filter(c => c.games.ctp).length;
+      const pot = ctpCount * BUYINS.ctp;
+      const perWinner = pot / winners.length;
+
+      document.getElementById('ctp-payouts').style.display = 'block';
+      document.getElementById('ctp-payout-body').innerHTML = winners.map(([hole, player]) => `
+        <tr>
+          <td>Hole ${hole}</td>
+          <td>${player}</td>
+          <td class="amount">$${perWinner.toFixed(2)}</td>
+          <td>—</td>
+          <td>${renderSendBtn('ctp_h'+hole, player, perWinner)}</td>
+        </tr>`).join('');
+
+      showToast(`CTP: ${winners.length} winner(s) — $${perWinner.toFixed(2)} each`, 'success');
+    }
+
+    // ── Blind Draw ──
+    function setupBlindDraw() {
+      const blindPlayers = checkinData.filter(c => c.games.blind).map(c => c.player);
+      const pot = blindPlayers.length * BUYINS.blind;
+      const fullWinners = Math.floor(pot / 10);
+      const hasSquirrel = (pot % 10) === 5;
+      const totalSlots = fullWinners + (hasSquirrel ? 1 : 0);
+
+      document.getElementById('blind-info').textContent =
+        `$5 buy-in | Pot: $${pot} → ${fullWinners} winner${fullWinners !== 1 ? 's' : ''} @ $10${hasSquirrel ? ' + 1 Blind Squirrel @ $5' : ''}`;
+
+      document.getElementById('blind-participants').innerHTML =
+        `<strong>Participants (${blindPlayers.length}):</strong> ${blindPlayers.join(', ')}`;
+
+      if (blindPlayers.length === 0) {
+        document.getElementById('blind-slots').innerHTML = '<div class="waiting">No players in Blind Draw.</div>';
+        return;
+      }
+
+      let html = '';
+      for (let i = 0; i < totalSlots; i++) {
+        const isSquirrel = hasSquirrel && i === totalSlots - 1;
+        const payout = isSquirrel ? 5 : 10;
+        const label = isSquirrel ? '🐿️ Blind Squirrel ($5)' : `Winner ${i + 1} ($10)`;
+        const saved = blindDrawWinners[i] || '';
+        html += `
+          <div class="blind-slot ${isSquirrel ? 'squirrel' : 'regular'}">
+            <div class="blind-slot-label">${label}</div>
+            <select id="blind-slot-${i}">
+              <option value="">-- Select Winner --</option>
+              ${blindPlayers.map(p => `<option value="${p}" ${p === saved ? 'selected' : ''}>${p}</option>`).join('')}
+            </select>
+          </div>`;
+      }
+      document.getElementById('blind-slots').innerHTML = html;
+    }
+
+    function saveBlindDrawWinners() {
+      const blindPlayers = checkinData.filter(c => c.games.blind).map(c => c.player);
+      const pot = blindPlayers.length * BUYINS.blind;
+      const fullWinners = Math.floor(pot / 10);
+      const hasSquirrel = (pot % 10) === 5;
+      const totalSlots = fullWinners + (hasSquirrel ? 1 : 0);
+
+      const winners = [];
+      const seen = new Set();
+      for (let i = 0; i < totalSlots; i++) {
+        const val = document.getElementById(`blind-slot-${i}`)?.value || '';
+        if (val && seen.has(val)) { showToast(`${val} selected more than once!`, 'error'); return; }
+        if (val) seen.add(val);
+        winners.push(val);
+      }
+      if (winners.some(w => !w)) { showToast('Please select all winners.', 'error'); return; }
+      blindDrawWinners = winners;
+      showToast('Blind Draw winners saved!', 'success');
+    }
+
+    // ── Send button ──
+    const sentPayouts = {};
+    function renderSendBtn(key, player, amount) {
+      if (sentPayouts[key]) {
+        return `<button class="btn btn-sent btn-sm" onclick="toggleSent('${key}')">✓ Sent</button>`;
+      }
+      return `<button class="btn btn-primary btn-sm" onclick="toggleSent('${key}')">Send $${amount.toFixed(2)}</button>`;
+    }
+    function toggleSent(key) {
+      sentPayouts[key] = !sentPayouts[key];
+      calculateChampion();
+      calculateQuota();
+      calculateSkins();
+      calculateCTPPayouts();
+    }
+
+    // ── Helpers ──
+    function namesMatch(a, b) {
+      const norm = s => (s || '').toLowerCase().replace(/['".,]/g,'').trim();
+      const na = norm(a), nb = norm(b);
+      if (na === nb) return true;
+      const fa = na.split(' ')[0], fb = nb.split(' ')[0];
+      return fa === fb && fa.length > 3;
+    }
+
+    function showToast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+  </script>
+
+</body>
+</html>
