@@ -52,7 +52,9 @@ const eventDateStr = fpgEvent.start.dateTime ? fpgEvent.start.dateTime.split('T'
     return res.status(200).json({
       eventString: dynamicEventString,
       date: eventDateStr,
-      slashDate: slashDate
+      slashDate: slashDate,
+      location: fpgEvent.location || '',
+      teeTime: fpgEvent.start.dateTime ? new Date(fpgEvent.start.dateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/New_York' }) : ''
     });
   } catch (error) {
     console.error("Calendar Engine Error:", error);
