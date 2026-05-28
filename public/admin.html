@@ -398,7 +398,7 @@
     <div class="tab active" onclick="switchTab('overview')">Overview</div>
     <div class="tab" onclick="switchTab('checkins')">Check-Ins</div>
     <div class="tab" onclick="switchTab('pairings')">Pairings</div>
-    <div class="tab" onclick="switchTab('payments')">Payments</div>
+    
     <div class="tab" onclick="window.location.href='/coordinator.html'">Coordinator</div>
   </div>
 
@@ -406,52 +406,46 @@
 
     <!-- ── OVERVIEW TAB ── -->
     <div class="tab-panel active" id="tab-overview">
-      <div class="card" style="margin-bottom:16px;">
-        <div class="card-body">
-          <div style="font-size:0.78rem; color:var(--gray); text-transform:uppercase; font-weight:600; margin-bottom:4px;">Current Event</div>
-          <div id="ov-event-name" style="font-size:1.1rem; font-weight:700; color:var(--green-dark);">Loading...</div>
-          <div id="ov-event-meta" style="font-size:0.82rem; color:var(--gray); margin-top:3px;"></div>
-        </div>
-      </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:12px; margin-top:4px;">
 
-      <div class="stats-grid">
-        <div class="stat-pill"><div class="stat-val" id="ov-count">—</div><div class="stat-label">Checked In</div></div>
-        <div class="stat-pill"><div class="stat-val" id="ov-paid">—</div><div class="stat-label">Paid</div></div>
-        <div class="stat-pill"><div class="stat-val" id="ov-groups">—</div><div class="stat-label">Groups</div></div>
-        <div class="stat-pill"><div class="stat-val" id="ov-collected">—</div><div class="stat-label">Collected</div></div>
-      </div>
-
-      <div class="card">
-        <div class="card-header"><span class="card-title">Current Pot Totals</span></div>
-        <div class="card-body">
-          <div class="pot-grid">
-            <div class="pot-item"><div class="pot-amt" id="ov-champ">$0</div><div class="pot-lbl">Champ</div></div>
-            <div class="pot-item"><div class="pot-amt" id="ov-quota">$0</div><div class="pot-lbl">Quota</div></div>
-            <div class="pot-item"><div class="pot-amt" id="ov-skins">$0</div><div class="pot-lbl">Skins</div></div>
-            <div class="pot-item"><div class="pot-amt" id="ov-ctp">$0</div><div class="pot-lbl">CTP</div></div>
-            <div class="pot-item"><div class="pot-amt" id="ov-blind">$0</div><div class="pot-lbl">Blind</div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Pairing Requests</span>
-        </div>
-        <div class="card-body" id="ov-pairing-requests">
-          <div style="color:var(--gray); font-size:0.85rem;">Loading...</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Cart Path Only Responses</span>
-        </div>
-        <div class="card-body" id="ov-cart-path">
-          <div style="color:var(--gray); font-size:0.85rem;">Loading...</div>
-        </div>
-      </div>
+    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="switchTab('checkins')">
+      <div style="font-size:2rem; margin-bottom:8px;"></div>
+      <div style="font-weight:700; color:var(--green-dark);">Check-Ins</div>
+      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">View &amp; manage players</div>
     </div>
+
+    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="switchTab('pairings')">
+      <div style="font-size:2rem; margin-bottom:8px;"></div>
+      <div style="font-weight:700; color:var(--green-dark);">Pairings</div>
+      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Build &amp; publish groups</div>
+    </div>
+
+    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="window.location.href='/coordinator.html'">
+      <div style="font-size:2rem; margin-bottom:8px;"></div>
+      <div style="font-weight:700; color:var(--green-dark);">Game Coordinator</div>
+      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Payments, pots &amp; results</div>
+    </div>
+
+    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="window.location.href='/scorekeeper.html'">
+      <div style="font-size:2rem; margin-bottom:8px;"></div>
+      <div style="font-weight:700; color:var(--green-dark);">Scorekeeper</div>
+      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Enter live scores</div>
+    </div>
+
+    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="window.location.href='/members.html'">
+      <div style="font-size:2rem; margin-bottom:8px;"></div>
+      <div style="font-weight:700; color:var(--green-dark);">Members</div>
+      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Member directory</div>
+    </div>
+
+    <div class="card" style="cursor:pointer; text-align:center; padding:24px 16px;" onclick="window.location.href='/profile-edit.html'">
+      <div style="font-size:2rem; margin-bottom:8px;">⚙️</div>
+      <div style="font-weight:700; color:var(--green-dark);">Settings</div>
+      <div style="font-size:0.75rem; color:var(--gray); margin-top:4px;">Edit profile &amp; credentials</div>
+    </div>
+
+  </div>
+</div>
 
     <!-- ── CHECK-INS TAB ── -->
     <div class="tab-panel" id="tab-checkins">
@@ -510,23 +504,7 @@
       </div>
     </div>
 
-    <!-- ── PAYMENTS TAB ── -->
-    <div class="tab-panel" id="tab-payments">
-      <div class="payment-summary">
-        <div class="pay-sum-item"><div class="pay-sum-val" id="pay-total-players">0</div><div class="pay-sum-lbl">Players</div></div>
-        <div class="pay-sum-item"><div class="pay-sum-val" id="pay-collected">$0</div><div class="pay-sum-lbl">Collected</div></div>
-        <div class="pay-sum-item"><div class="pay-sum-val" id="pay-expected">$0</div><div class="pay-sum-lbl">Expected</div></div>
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Payment Tracker</span>
-          <span style="font-size:0.78rem; color:var(--gray);">Tap ✓ to mark paid</span>
-        </div>
-        <div id="payment-list">
-          <div class="spinner-wrap"><div class="spinner"></div><div>Loading...</div></div>
-        </div>
-      </div>
-    </div>
+    
 
   </main>
 
