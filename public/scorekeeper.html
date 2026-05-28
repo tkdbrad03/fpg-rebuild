@@ -1507,7 +1507,7 @@
           const mappedGroups = data.groups.map(g => ({
             number: parseInt(g.groupNumber),
             teeTime: g.teeTime || '',
-            scorekeepers: g.scorekeepers || [],
+            scorekeepers: (g.players || []).filter(p => p.isScorekeeper === true).map(p => p.name),
             players: (g.players || []).map(p => {
           const female = isFemale(p.name);
           const handicapIndex = parseFloat(p.handicap) || 0;
