@@ -689,7 +689,7 @@ async function loadAll() {
     // ── PAIRINGS POOL ──
     function renderPool() {
       const el = document.getElementById('pool-list');
-      const assignedNames = new Set(groups.flatMap(g => g.players));
+      const assignedNames = new Set(groups.flatMap(g => g.players.map(p => typeof p === 'string' ? p : p.name)));
       const search = (document.getElementById('pool-search')?.value || '').toLowerCase();
 
       const players = allCheckins.filter(c =>
@@ -743,15 +743,15 @@ async function loadAll() {
       let target = groups.find(g => g.players.length < 4 && g.players.length === Math.min(...groups.map(g2 => g2.players.length)));
       if (!target) target = groups.find(g => g.players.length < 4);
       if (!target) { showToast('All groups are full (4 players max). Add a new group.', 'error'); return; }
-      if (groups.some(g => g.players.includes(name))) { return; }
-      target.players.push(name);
+      if (groups.some(g => g.players.some(p => (typeof p === 'string' ? p : p.name) === name))) { return; }
+      target.players.push({ name, handicap: memberHandicaps[name] || null, isGuest: false });
       renderGroups();
       renderPool();
     }
 
     function removeFromGroup(groupId, playerName) {
       const group = groups.find(g => g.id === groupId);
-      if (group) group.players = group.players.filter(p => p !== playerName);
+      if (group) group.players = group.players.filter(p => (typeof p === 'string' ? p : p.name) !== playerName);
       renderGroups();
       renderPool();
     }
@@ -793,12 +793,15 @@ async function loadAll() {
           <div class="group-players-list">
             ${g.players.length === 0
               ? `<div class="group-empty">Click a player from the pool to assign here.</div>`
-              : g.players.map(name => `
-                  <div class="group-player-chip">
-                    <span>${name}</span>
-                    <button class="chip-remove" onclick="removeFromGroup(${g.id}, '${name.replace(/'/g,"\\'")}')">×</button>
-                  </div>`).join('')
-            }
+: g.players.map(p => {
+    const name = typeof p === 'string' ? p : p.name;
+    return `
+    <div class="group-player-chip">
+      <span>${name}</span>
+      <button class="chip-remove" onclick="removeFromGroup(${g.id}, '${name.replace(/'/g,"\\'")}')">×</button>
+    </div>`;
+  }).join('')
+}
           </div>
           <div class="group-footer">
             <span>${g.players.length}/4 players</span>
