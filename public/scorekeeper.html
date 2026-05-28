@@ -1005,6 +1005,7 @@
         const text = await res.text();
         if (!text.startsWith('/*O_o*/')) return;
 
+        if (!text.startsWith('/*O_o*/')) return;
         const json = JSON.parse(text.substring(47).slice(0, -2));
         const rows = json.table?.rows || [];
         if (!rows.length) return;
