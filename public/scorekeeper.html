@@ -2455,8 +2455,9 @@ if (!isPar3) {
         const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=Pairings&_=${Date.now()}`;
         const response = await fetch(url);
         const text = await response.text();
-        const json = JSON.parse(text.substring(47).slice(0, -2));
-        const rows = json.table.rows;
+        if (!text.startsWith('/*O_o*/')) return;
+const json = JSON.parse(text.substring(47).slice(0, -2));
+const rows = json.table.rows;
         
         // Check if any player's strokes have changed
         let strokesChanged = false;
