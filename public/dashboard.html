@@ -131,7 +131,7 @@
     </div>
 
     <div class="payment-banner" id="payment-banner" style="display:none;">
-      <div class="payment-banner-icon">💰</div>
+      <div class="payment-banner-icon"></div>
       <div>
         <div class="payment-banner-title">Send Your Buy-In</div>
         <div class="payment-banner-text">Zelle: <strong>floridaplayersgroup@gmail.com</strong></div>
@@ -273,7 +273,7 @@
         const res = await fetch('/api/get-pairings');
         const data = await res.json();
         if (!data.published || data.groups.length === 0) {
-          body.innerHTML = `<div class="no-pairings">📋 Pairings have not been published yet.<br><span style="font-size:0.78rem; margin-top:4px; display:block;">Check back closer to event day.</span></div>`;
+          body.innerHTML = `<div class="no-pairings">Pairings have not been published yet.<br><span style="font-size:0.78rem; margin-top:4px; display:block;">Check back closer to event day.</span></div>`;
           return;
         }
         let html = `<div style="font-size:0.78rem; color:#718096; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid #e5e7eb;">${data.course} · ${data.date} · ${data.totalGroups} groups</div>`;
@@ -285,8 +285,8 @@
               <div class="player-badges">
                 ${p.handicap ? `<span class="badge badge-hcp">HCP ${p.handicap}</span>` : ''}
                 ${isAllIn ? `<span class="badge badge-allin">ALL IN</span>` : ''}
-                ${p.isScorekeeper ? `<span class="badge badge-sk">📋 SK</span>` : ''}
-                ${p.isGamingCoord ? `<span class="badge badge-gc">🎮 GC</span>` : ''}
+                ${p.isScorekeeper ? `<span class="badge badge-sk">SK</span>` : ''}
+                ${p.isGamingCoord ? `<span class="badge badge-gc">GC</span>` : ''}
               </div></div>`;
           });
           html += `</div>`;
