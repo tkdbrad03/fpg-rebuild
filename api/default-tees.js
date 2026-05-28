@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: 'Default Tees!A2:H', // A: Course, B: Men's Default, C: Men's Yardage, E: Men's Alt, G: Women's Default, H: Women's Yardage
     });
-    
+const rows = response.data.values || [];    
 const tees = rows.map(row => ({
   Course: row[0] || '',
   MensDefault: row[1] || '',
