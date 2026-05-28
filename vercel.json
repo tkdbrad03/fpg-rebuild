@@ -18,6 +18,7 @@
     { "src": "/api/scores/update-ghin", "dest": "/api/scores/update-ghin.js" },
     { "src": "/api/submit-score", "dest": "/api/submit-score.js" },
     { "src": "/api/submit-ctp", "dest": "/api/submit-ctp.js" },
-    { "src": "/api/get-scores", "dest": "/api/get-scores.js" }
+    { "src": "/api/get-scores", "dest": "/api/get-scores.js" },
+    { "src": "/api/submit-round-results", "dest": "/api/submit-round-results.js" }
   ]
 }
