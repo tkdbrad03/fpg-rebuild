@@ -13,16 +13,17 @@ module.exports = async (req, res) => {
 
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'FPG Members!A2:B', // A: Name, B: GHIN HCP
+      range: 'FPG Members!A2:I', // A: Name, B: GHIN HCP
     });
 
     const rows = response.data.values || [];
     const handicaps = rows
       .filter(row => row[0])
       .map(row => ({
-        name: row[0],
-        handicap: row[1] ? parseFloat(row[1]) : null
-      }));
+  name: row[0] || '',
+  handicap: row[1] ? parseFloat(row[1]) : null,
+  photo: row[8] || ''
+}));
 
     return res.status(200).json(handicaps);
   } catch (error) {
