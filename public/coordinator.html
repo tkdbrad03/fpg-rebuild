@@ -798,7 +798,7 @@
       for (let i = 0; i < totalSlots; i++) {
         const isSquirrel = hasSquirrel && i === totalSlots - 1;
         const payout = isSquirrel ? 5 : 10;
-        const label = isSquirrel ? '🐿️ Blind Squirrel ($5)' : `Winner ${i + 1} ($10)`;
+        const label = isSquirrel ? 'Blind Squirrel ($5)' : `Winner ${i + 1} ($10)`;
         const saved = blindDrawWinners[i] || '';
         html += `
           <div class="blind-slot ${isSquirrel ? 'squirrel' : 'regular'}">
