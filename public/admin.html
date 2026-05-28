@@ -478,6 +478,7 @@
     <option value="">-- Select GC --</option>
   </select>
 </div>
+        <button class="btn btn-ghost btn-sm" onclick="loadExistingPairings()">↓ Load Existing</button>
         <button class="btn btn-ghost btn-sm" onclick="addGroup()">+ Add Group</button>
         <button class="btn btn-ghost btn-sm" onclick="clearAllGroups()">Clear All</button>
         <button class="btn btn-gold" onclick="publishPairings()" id="publish-btn">Publish Pairings</button>
@@ -592,6 +593,7 @@
       renderCheckinsList();
       renderPool();
       renderPayments();
+      await loadExistingPairings();
       await Promise.all([loadCheckins(), loadMembers(), loadMemberHandicaps()]);
     }
 
@@ -1071,6 +1073,43 @@ gamingCoordinator: gamingCoordinator || null
         showToast('Connection error.', 'error');
       }
     }
+    async function loadExistingPairings() {
+  try {
+    const res = await fetch('/api/get-pairings');
+    const data = await res.json();
+    if (!data.published || data.groups.length === 0) return;
+
+    groups = [];
+    groupCounter = 0;
+
+    data.groups.forEach(group => {
+      groupCounter++;
+      const players = group.players.map(p => ({
+        name: p.name,
+        handicap: p.handicap || memberHandicaps[p.name] || null,
+        isGuest: false
+      }));
+      const sk1 = group.players.find(p => p.isScorekeeper)?.name || null;
+      const sk2 = group.players.filter(p => p.isScorekeeper)?.[1]?.name || null;
+      const gc = group.players.find(p => p.isGamingCoord)?.name || null;
+      if (gc) gamingCoordinator = gc;
+
+      groups.push({
+        id: groupCounter,
+        players,
+        teeTime: group.teeTime,
+        sk1,
+        sk2
+      });
+    });
+
+    renderGroups();
+    renderPool();
+    showToast('Existing pairings loaded', 'success');
+  } catch(e) {
+    showToast('Could not load existing pairings', 'error');
+  }
+}
 
     // ── Toast ──
     function showToast(msg, type = '') {
