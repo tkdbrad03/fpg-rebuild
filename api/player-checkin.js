@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'CheckIns2!A:K',
+      range: 'CheckIns2!A1',
       valueInputOption: 'USER_ENTERED',
       requestBody: { values: [rowValues] }
     });
