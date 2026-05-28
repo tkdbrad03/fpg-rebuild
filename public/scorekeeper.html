@@ -1003,7 +1003,6 @@
         const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json&sheet=Default%20Tees&headers=1&_=${Date.now()}`;
         const res = await fetch(url);
         const text = await res.text();
-        if (!text.startsWith('/*O_o*/')) return;
 
         if (!text.startsWith('/*O_o*/')) return;
         const json = JSON.parse(text.substring(47).slice(0, -2));
@@ -1502,7 +1501,7 @@
         const response = await fetch('/api/get-pairings');
         const data = await response.json();
         
-        if (data.success && data.groups && data.groups.length > 0) {
+        if (data.published && data.groups && data.groups.length > 0) {
           if (data.course) loadCourseData(data.course);
           
           const mappedGroups = data.groups.map(g => ({
