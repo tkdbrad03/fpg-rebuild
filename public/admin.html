@@ -621,12 +621,7 @@ async function loadAll() {
       });
     }
 
-    function logout() {
-      localStorage.removeItem('fpg_token');
-      localStorage.removeItem('fpg_user');
-      localStorage.removeItem('fpg_player_name');
-      window.location.href = '/login.html';
-    }
+    
 
     // ── Load event ──
     async function loadEvent() {
@@ -948,6 +943,12 @@ async function loadAll() {
       } catch(e) {
         showToast('Connection error.', 'error');
       }
+    }
+    function logout() {
+      localStorage.removeItem('fpg_token');
+      localStorage.removeItem('fpg_user');
+      localStorage.removeItem('fpg_player_name');
+      window.location.href = '/login.html';
     }
 
     // ── Toast ──
