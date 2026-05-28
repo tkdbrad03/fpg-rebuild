@@ -197,7 +197,7 @@
 
     <!-- Check-In Section -->
     <div class="section-card">
-      <div class="section-header">⛳ Weekly Check-In</div>
+      <div class="section-header">Weekly Check-In</div>
       <div class="section-body">
         <iframe id="checkin-frame" src="/checkin.html" scrolling="no"
           onload="resizeFrame(this)"></iframe>
@@ -298,7 +298,7 @@
         if (!data.published || data.groups.length === 0) {
           body.innerHTML = `
             <div class="no-pairings">
-              <div class="icon">📋</div>
+              <div class="icon"></div>
               <div>Pairings have not been published yet.</div>
               <div style="margin-top:6px; font-size:0.78rem;">Check back closer to event day.</div>
             </div>`;
@@ -312,7 +312,7 @@
             <div class="group-card">
               <div class="group-header">
                 <span class="group-title">Group ${group.groupNumber}</span>
-                <span class="group-tee">🕐 ${group.teeTime}</span>
+                <span class="group-tee">${group.teeTime}</span>
               </div>`;
 
           group.players.forEach(player => {
@@ -330,8 +330,8 @@
                 <div class="player-badges">
                   ${player.handicap ? `<span class="badge badge-hcp">HCP ${player.handicap}</span>` : ''}
                   ${isAllIn ? `<span class="badge badge-allin">ALL IN</span>` : ''}
-                  ${player.isScorekeeper ? `<span class="badge badge-sk">SK</span>` : ''}
-                  ${player.isGamingCoord ? `<span class="badge badge-gc">GC</span>` : ''}
+                  ${player.isScorekeeper ? `<span class="badge badge-sk">Scorekeeper</span>` : ''}
+                  ${player.isGamingCoord ? `<span class="badge badge-gc">Gaming Coord</span>` : ''}
                 </div>
               </div>`;
           });
