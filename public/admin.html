@@ -479,6 +479,13 @@
           <label style="font-weight:600; color:var(--gray);">Start Time</label>
           <input type="time" id="start-time" value="10:00">
         </div>
+        <div class="tee-time-config">
+          <label style="font-weight:600; color:var(--gray);">Gaming Coordinator</label>
+          <select id="gc-select" onchange="gamingCoordinator = this.value" style="border:none; outline:none; font-size:0.85rem; color:var(--dark); background:transparent;">
+            <option value="">-- Select GC --</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="loadExistingPairings()">Load Existing</button>
         <button class="btn btn-ghost btn-sm" onclick="addGroup()">+ Add Group</button>
         <button class="btn btn-ghost btn-sm" onclick="clearAllGroups()">Clear All</button>
         <button class="btn btn-gold" onclick="publishPairings()" id="publish-btn">Publish Pairings</button>
@@ -722,9 +729,10 @@ async function loadAll() {
     // ── GROUPS ──
     function addGroup() {
       groupCounter++;
-      groups.push({ id: groupCounter, players: [], teeTime: calcTeeTime(groupCounter - 1) });
+      groups.push({ id: groupCounter, players: [], teeTime: calcTeeTime(groupCounter - 1), sk1: null, sk2: null });
       renderGroups();
       renderPool();
+      updateGCDropdown();
     }
 
     function calcTeeTime(index) {
@@ -795,9 +803,28 @@ async function loadAll() {
               ? `<div class="group-empty">Click a player from the pool to assign here.</div>`
 : g.players.map(p => {
     const name = typeof p === 'string' ? p : p.name;
+    const hcp = (typeof p === 'object' && p.handicap) ? p.handicap : (memberHandicaps[name] || null);
+    const isSK1 = g.sk1 === name;
+    const isSK2 = g.sk2 === name;
     return `
     <div class="group-player-chip">
-      <span>${name}</span>
+      <div style="flex:1;">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span>${name}</span>
+          ${isSK1 ? '<span class="badge" style="background:#fff3cd; color:#856404; font-size:0.68rem; padding:2px 7px; border-radius:20px;">SK1</span>' : ''}
+          ${isSK2 ? '<span class="badge" style="background:#fff3cd; color:#856404; font-size:0.68rem; padding:2px 7px; border-radius:20px;">SK2</span>' : ''}
+          ${gamingCoordinator === name ? '<span class="badge" style="background:#cfe2ff; color:#084298; font-size:0.68rem; padding:2px 7px; border-radius:20px;">GC</span>' : ''}
+        </div>
+        <div style="font-size:0.72rem; color:var(--gray); margin-top:2px;">HCP: ${hcp ?? '—'}</div>
+        <div style="margin-top:6px;">
+          <select style="font-size:0.72rem; padding:2px 6px; border:1px solid var(--line); border-radius:4px;"
+            onchange="assignSK(${g.id}, '${name.replace(/'/g,"\\'")}', this.value)">
+            <option value="">No SK role</option>
+            <option value="sk1" ${isSK1 ? 'selected' : ''}>SK1 (Primary)</option>
+            <option value="sk2" ${isSK2 ? 'selected' : ''}>SK2 (Backup)</option>
+          </select>
+        </div>
+      </div>
       <button class="chip-remove" onclick="removeFromGroup(${g.id}, '${name.replace(/'/g,"\\'")}')">×</button>
     </div>`;
   }).join('')
@@ -830,8 +857,8 @@ async function loadAll() {
   const hcp = (typeof p === 'object' && p.handicap) ? p.handicap : (memberHandicaps[name] || 0);
   return { name, handicap: hcp, quota: 0, strokes: 0 };
 }),
-          scorekeepers: [],
-          gamingCoordinator: null
+          scorekeepers: [g.sk1, g.sk2].filter(Boolean),
+gamingCoordinator: gamingCoordinator || null
         }))
       };
 
@@ -962,6 +989,25 @@ async function loadAll() {
       t.className = `toast ${type} show`;
       setTimeout(() => { t.classList.remove('show'); }, 3500);
     }
+
+    function assignSK(groupId, playerName, role) {
+  const group = groups.find(g => g.id === groupId);
+  if (!group) return;
+  if (group.sk1 === playerName) group.sk1 = null;
+  if (group.sk2 === playerName) group.sk2 = null;
+  if (role === 'sk1') group.sk1 = playerName;
+  if (role === 'sk2') group.sk2 = playerName;
+  renderGroups();
+}
+
+function updateGCDropdown() {
+  const sel = document.getElementById('gc-select');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">-- Select GC --</option>' +
+    allCheckins.map(c => `<option value="${c.playerName}" ${c.playerName === current ? 'selected' : ''}>${c.playerName}</option>`).join('');
+  if (current) sel.value = current;
+}
   </script>
 
 </body>
