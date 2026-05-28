@@ -15,240 +15,162 @@
       --fpg-gray: #718096;
       --fpg-error: #e53e3e;
       --fpg-success: #38a169;
+      --line: #e5e7eb;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 
-    body {
-      background-color: var(--fpg-light);
-      color: var(--fpg-dark);
-      padding-bottom: 40px;
-      -webkit-font-smoothing: antialiased;
-    }
+    body { background-color: var(--fpg-light); color: var(--fpg-dark); padding-bottom: 40px; -webkit-font-smoothing: antialiased; }
 
-    /* Header & Branding */
-    header {
-      background-color: var(--fpg-green-dark);
-      color: var(--fpg-white);
-      padding: 20px 16px;
-      text-align: center;
-      border-bottom: 4px solid var(--fpg-gold);
-    }
+    header { background-color: var(--fpg-green-dark); color: var(--fpg-white); padding: 20px 16px; text-align: center; border-bottom: 4px solid var(--fpg-gold); }
+    header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
 
-    header h1 {
-      font-size: 1.4rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
+    main { max-width: 480px; margin: 0 auto; padding: 16px; }
 
-    /* Main Container */
-    main {
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 16px;
-    }
+    /* Cards */
+    .card { background: var(--fpg-white); border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .card h2 { font-size: 1.05rem; font-weight: 700; color: var(--fpg-green); margin-bottom: 16px; }
 
-    /* Event Information Card */
-    .event-card {
-      background-color: var(--fpg-white);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      border-left: 4px solid var(--fpg-green);
-    }
+    .event-card { border-left: 4px solid var(--fpg-green); }
+    .event-card h2 { font-size: 0.9rem; color: var(--fpg-gray); text-transform: uppercase; margin-bottom: 4px; font-weight: 600; }
+    .event-card .event-title { font-size: 1.2rem; font-weight: 700; color: var(--fpg-green-dark); }
 
-    .event-card h2 {
-      font-size: 0.9rem;
-      color: var(--fpg-gray);
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
+    /* Banners */
+    .banner { padding: 14px; border-radius: 8px; margin-bottom: 16px; font-size: 0.95rem; font-weight: 600; display: none; line-height: 1.4; }
+    .banner-error { background-color: #fff5f5; color: var(--fpg-error); border: 1px solid var(--fpg-error); }
+    .banner-success { background-color: #f0fff4; color: var(--fpg-success); border: 1px solid var(--fpg-success); }
 
-    .event-card .event-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--fpg-green-dark);
-    }
+    /* Loading */
+    #loading-overlay { text-align: center; padding: 40px 20px; }
+    .spinner { width: 40px; height: 40px; border: 4px solid rgba(0,0,0,0.1); border-top-color: var(--fpg-green); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Alert and Notification Banners */
-    .banner {
-      padding: 14px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: none;
-      line-height: 1.4;
-    }
+    form { display: none; }
 
-    .banner-error {
-      background-color: #fff5f5;
-      color: var(--fpg-error);
-      border: 1px solid var(--fpg-error);
-    }
+    /* Form elements */
+    .form-group { margin-bottom: 20px; }
+    .form-group:last-child { margin-bottom: 0; }
 
-    .banner-success {
-      background-color: #f0fff4;
-      color: var(--fpg-success);
-      border: 1px solid var(--fpg-success);
-    }
-
-    /* Loading Overlay */
-    #loading-overlay {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-top-color: var(--fpg-green);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 12px auto;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* Form Design */
-    form {
-      display: none;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--fpg-green-dark);
-    }
+    label.field-label { display: block; font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; color: var(--fpg-green-dark); }
 
     select, input[type="text"], textarea {
-      width: 100%;
-      min-height: 48px; /* Optimized for touch targets */
-      padding: 12px;
-      font-size: 16px; /* Prevents iOS auto-zoom on focus */
-      border: 1px solid #cbd5e0;
-      border-radius: 8px;
-      background-color: var(--fpg-white);
-      color: var(--fpg-dark);
-      outline: none;
-      transition: border-color 0.2s;
+      width: 100%; min-height: 48px; padding: 12px; font-size: 16px;
+      border: 1px solid #cbd5e0; border-radius: 8px; background-color: var(--fpg-white);
+      color: var(--fpg-dark); outline: none; transition: border-color 0.2s;
     }
+    select:focus, input[type="text"]:focus, textarea:focus { border-color: var(--fpg-green); box-shadow: 0 0 0 3px rgba(45,80,22,0.1); }
 
-    select:focus, input[type="text"]:focus, textarea:focus {
-      border-color: var(--fpg-green);
-      box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+    /* Tee toggle (existing style) */
+    .toggle-group { display: flex; gap: 12px; }
+    .toggle-group input[type="radio"] { display: none; }
+    .toggle-label {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      min-height: 52px; background-color: var(--fpg-white); border: 2px solid #cbd5e0;
+      border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s; font-size: 0.9rem;
     }
+    .toggle-group input[type="radio"]:checked + .toggle-label { border-color: var(--fpg-green); background-color: #f0fff4; color: var(--fpg-green-dark); }
 
-    /* Guest Section Styling */
-    .guest-container {
-      background-color: #edf2f7;
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 8px;
+    /* Radio list (cart path, tee box) */
+    .radio-list { display: flex; flex-direction: column; gap: 8px; }
+    .radio-list-option {
+      display: flex; align-items: center; gap: 10px; padding: 12px;
+      border: 2px solid var(--line); border-radius: 10px; cursor: pointer; transition: all 0.2s;
     }
+    .radio-list-option:hover { border-color: var(--fpg-green); }
+    .radio-list-option input[type="radio"] { width: 20px; height: 20px; accent-color: var(--fpg-green); }
+    .radio-list-option span { font-size: 0.9rem; }
+    .radio-list-option input[type="radio"]:checked ~ span { color: var(--fpg-green-dark); font-weight: 600; }
 
-    .guest-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
+    /* Buy-in Options */
+    .buyin-options { display: flex; flex-direction: column; gap: 12px; }
+    .buyin-option {
+      border: 2px solid var(--line); border-radius: 12px; padding: 16px;
+      cursor: pointer; transition: all 0.2s;
     }
+    .buyin-option.selected { border-color: var(--fpg-green); background: #f0fff4; }
+    .buyin-option input[type="radio"] { display: none; }
+    .buyin-option-header { display: flex; justify-content: space-between; align-items: center; }
+    .buyin-option-title { font-weight: 700; font-size: 1rem; color: var(--fpg-green); }
+    .buyin-option-price { font-weight: 800; font-size: 1.2rem; color: var(--fpg-green); }
+    .buyin-option-desc { font-size: 0.82rem; color: var(--fpg-gray); margin-top: 4px; }
 
-    .guest-row:last-child {
-      margin-bottom: 0;
+    /* Individual Games Grid */
+    .games-grid { display: none; flex-direction: column; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .games-grid.show { display: flex; }
+    .game-option {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px; border: 2px solid var(--line); border-radius: 10px;
+      cursor: pointer; transition: all 0.2s;
     }
-
-    .btn-remove-guest {
-      background-color: var(--fpg-error);
-      color: var(--fpg-white);
-      border: none;
-      border-radius: 8px;
-      width: 48px;
-      min-height: 48px;
-      font-weight: bold;
-      font-size: 1.2rem;
+    .game-option:hover { border-color: var(--fpg-green); }
+    .game-option.selected { border-color: var(--fpg-green); background: #f0fff4; }
+    .game-option input[type="checkbox"] { display: none; }
+    .game-info { display: flex; align-items: center; gap: 10px; }
+    .game-checkbox {
+      width: 24px; height: 24px; border: 2px solid #cbd5e0; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      color: transparent; background: #fff; flex-shrink: 0;
     }
+    .game-option.selected .game-checkbox { background: var(--fpg-green); border-color: var(--fpg-green); color: #fff; }
+    .game-name { font-weight: 600; font-size: 0.9rem; }
+    .game-note { font-size: 0.75rem; color: var(--fpg-gray); }
+    .game-price { font-weight: 700; color: var(--fpg-green); font-size: 0.95rem; flex-shrink: 0; }
 
-    .btn-add-guest {
-      background-color: #cbd5e0;
-      color: var(--fpg-dark);
-      border: none;
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-top: 4px;
-      width: 100%;
-      min-height: 40px;
+    /* Total bar */
+    .total-bar {
+      background: var(--fpg-green); color: #fff; padding: 14px 16px;
+      border-radius: 10px; display: flex; justify-content: space-between;
+      align-items: center; margin-top: 16px;
     }
+    .total-label { font-weight: 600; font-size: 0.95rem; }
+    .total-amount { font-size: 1.4rem; font-weight: 800; }
 
-    /* Radio Group for Tee Preference */
-    .radio-group {
-      display: flex;
-      gap: 12px;
+    /* Grand Total card */
+    #grand-total-card { display: none; background: linear-gradient(135deg, var(--fpg-green), var(--fpg-green-dark)); color: #fff; }
+    #grand-total-card .grand-total-row { display: flex; justify-content: space-between; align-items: center; }
+    #grand-total-card .grand-label { font-size: 0.9rem; opacity: 0.9; }
+    #grand-total-card .grand-sub { font-size: 0.75rem; opacity: 0.7; margin-top: 3px; }
+    #grand-total-card .grand-amount { font-size: 1.8rem; font-weight: 800; }
+
+    /* Pot Totals */
+    .pot-preview { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pot-item { background: #f3f4f6; padding: 8px 10px; border-radius: 8px; text-align: center; flex: 1; min-width: 70px; }
+    .pot-item .pot-amount { font-weight: 800; color: var(--fpg-green); font-size: 1rem; }
+    .pot-item .pot-label { font-size: 0.68rem; color: var(--fpg-gray); text-transform: uppercase; margin-top: 2px; }
+    .pot-count { text-align: center; margin-top: 10px; font-size: 0.82rem; color: var(--fpg-gray); }
+
+    /* Course tee info box */
+    .tee-info-box {
+      background: linear-gradient(135deg, #f5f8ef, #e8f3dd); border: 1px solid #c5d9b0;
+      border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;
     }
+    .tee-info-course { font-weight: 700; font-size: 0.9rem; color: var(--fpg-green-dark); margin-bottom: 8px; }
+    .tee-info-row { display: flex; gap: 12px; }
+    .tee-info-box-item { flex: 1; background: #fff; border-radius: 8px; padding: 8px; text-align: center; }
+    .tee-info-box-item .tee-cat { font-size: 0.7rem; color: var(--fpg-gray); text-transform: uppercase; }
+    .tee-info-box-item .tee-color { font-weight: 700; font-size: 0.95rem; color: var(--fpg-green-dark); margin: 2px 0; }
+    .tee-info-box-item .tee-yardage { font-size: 0.75rem; color: var(--fpg-gray); }
 
-    .radio-label {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 52px;
-      background-color: var(--fpg-white);
-      border: 2px solid #cbd5e0;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.2s;
-    }
+    /* Guests */
+    .guest-container { background-color: #edf2f7; padding: 12px; border-radius: 8px; margin-top: 8px; }
+    .guest-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .guest-row:last-child { margin-bottom: 0; }
+    .btn-remove-guest { background-color: var(--fpg-error); color: #fff; border: none; border-radius: 8px; width: 48px; min-height: 48px; font-weight: bold; font-size: 1.2rem; cursor: pointer; flex-shrink: 0; }
+    .btn-add-guest { background-color: #cbd5e0; color: var(--fpg-dark); border: none; border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; font-weight: 600; margin-top: 4px; width: 100%; min-height: 40px; cursor: pointer; }
 
-    input[type="radio"] {
-      display: none;
-    }
+    /* Payment reminder */
+    .payment-reminder { background: #fff8e1; border: 1px solid #f59e0b; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.82rem; color: #92400e; line-height: 1.5; }
 
-    input[type="radio"]:checked + .radio-label {
-      border-color: var(--fpg-green);
-      background-color: #f0fff4;
-      color: var(--fpg-green-dark);
-    }
-
-    /* Submit Action Button */
+    /* Submit */
     .btn-submit {
-      width: 100%;
-      min-height: 54px;
-      background-color: var(--fpg-green);
-      color: var(--fpg-white);
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 12px;
-      box-shadow: 0 4px 6px rgba(45, 80, 22, 0.2);
+      width: 100%; min-height: 54px; background-color: var(--fpg-green); color: #fff;
+      border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;
+      box-shadow: 0 4px 6px rgba(45,80,22,0.2); cursor: pointer;
     }
+    .btn-submit:disabled { background-color: #cbd5e0; color: var(--fpg-gray); box-shadow: none; cursor: not-allowed; }
 
-    .btn-submit:disabled {
-      background-color: #cbd5e0;
-      color: var(--fpg-gray);
-      box-shadow: none;
-      cursor: not-allowed;
-    }
+    .hint-text { font-size: 0.82rem; color: var(--fpg-gray); margin-top: 6px; font-style: italic; }
   </style>
 </head>
 <body>
@@ -258,7 +180,7 @@
   </header>
 
   <main>
-    <div class="event-card">
+    <div class="card event-card">
       <h2>Current Event</h2>
       <div id="event-display" class="event-title">Loading upcoming round...</div>
     </div>
@@ -279,35 +201,185 @@
     </div>
 
     <form id="checkin-form">
-      
-      <div class="form-group">
-        <label for="player-select">Select Your Name</label>
-        <select id="player-select" required>
-          <option value="" disabled selected>-- Select Member --</option>
-        </select>
-      </div>
 
-      <div class="form-group">
-        <label>Tee Selection Preference</label>
-        <div class="radio-group">
-          <input type="radio" id="tee-default" name="teePreference" value="Yes" checked>
-          <label for="tee-default" class="radio-label">Use Default Tee</label>
+      <!-- ── WHO'S PLAYING ── -->
+      <div class="card">
+        <h2>Who's Playing?</h2>
 
-          <input type="radio" id="tee-alternate" name="teePreference" value="No">
-          <label for="tee-alternate" class="radio-label">Alternate Tee</label>
+        <div class="form-group">
+          <label class="field-label" for="player-select">Your Name</label>
+          <select id="player-select" required>
+            <option value="" disabled selected>-- Select Member --</option>
+          </select>
         </div>
-        <p id="tee-hint" style="font-size: 0.85rem; color: var(--fpg-gray); margin-top: 6px; font-style: italic;"></p>
+
+        <div class="form-group">
+          <label class="field-label">Bring Guests?</label>
+          <div id="guests-wrapper"></div>
+          <button type="button" class="btn-add-guest" id="btn-add-guest">+ Add Guest</button>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>Bring Guests?</label>
-        <div id="guests-wrapper"></div>
-        <button type="button" class="btn-add-guest" id="btn-add-guest">+ Add Guest</button>
+      <!-- ── SELECT YOUR GAMES ── -->
+      <div class="card">
+        <h2>Select Your Games</h2>
+
+        <div class="buyin-options">
+          <label class="buyin-option selected" id="all-in-option" onclick="selectBuyin('allin')">
+            <input type="radio" name="buyinType" value="allin" checked>
+            <div class="buyin-option-header">
+              <span class="buyin-option-title">ALL IN</span>
+              <span class="buyin-option-price">$30</span>
+            </div>
+            <div class="buyin-option-desc">All 5 games included</div>
+          </label>
+
+          <label class="buyin-option" id="individual-option" onclick="selectBuyin('individual')">
+            <input type="radio" name="buyinType" value="individual">
+            <div class="buyin-option-header">
+              <span class="buyin-option-title">Pick Your Games</span>
+              <span class="buyin-option-price" id="individual-total">$0</span>
+            </div>
+            <div class="buyin-option-desc">Choose which games to play</div>
+          </label>
+        </div>
+
+        <div class="games-grid" id="games-grid">
+          <label class="game-option" data-price="10" onclick="toggleGame(this)">
+            <input type="checkbox" name="games" value="Skins - $10">
+            <div class="game-info">
+              <div class="game-checkbox">✓</div>
+              <div>
+                <div class="game-name">Skins</div>
+                <div class="game-note">Members &amp; Guests with Handicap</div>
+              </div>
+            </div>
+            <div class="game-price">$10</div>
+          </label>
+
+          <label class="game-option" data-price="5" onclick="toggleGame(this)">
+            <input type="checkbox" name="games" value="Champion of the Day - $5">
+            <div class="game-info">
+              <div class="game-checkbox">✓</div>
+              <div>
+                <div class="game-name">Champion of the Day</div>
+                <div class="game-note">Members &amp; Guests with Handicap</div>
+              </div>
+            </div>
+            <div class="game-price">$5</div>
+          </label>
+
+          <label class="game-option" data-price="5" onclick="toggleGame(this)">
+            <input type="checkbox" name="games" value="Quota Game - $5">
+            <div class="game-info">
+              <div class="game-checkbox">✓</div>
+              <div>
+                <div class="game-name">Quota Game</div>
+                <div class="game-note">Members Only</div>
+              </div>
+            </div>
+            <div class="game-price">$5</div>
+          </label>
+
+          <label class="game-option" data-price="5" onclick="toggleGame(this)">
+            <input type="checkbox" name="games" value="Closest to Pin - $5">
+            <div class="game-info">
+              <div class="game-checkbox">✓</div>
+              <div>
+                <div class="game-name">Closest to Pin</div>
+                <div class="game-note">All Players</div>
+              </div>
+            </div>
+            <div class="game-price">$5</div>
+          </label>
+
+          <label class="game-option" data-price="5" onclick="toggleGame(this)">
+            <input type="checkbox" name="games" value="Blind Draw - $5">
+            <div class="game-info">
+              <div class="game-checkbox">✓</div>
+              <div>
+                <div class="game-name">Blind Draw</div>
+                <div class="game-note">All Players</div>
+              </div>
+            </div>
+            <div class="game-price">$5</div>
+          </label>
+        </div>
+
+        <div class="total-bar">
+          <span class="total-label">Your Total</span>
+          <span class="total-amount" id="player-total">$30</span>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label for="pairing-request">Pairing Request / Notes</label>
-        <textarea id="pairing-request" placeholder="Optional notes" rows="2"></textarea>
+      <!-- ── GRAND TOTAL (guests present) ── -->
+      <div class="card" id="grand-total-card">
+        <div class="grand-total-row">
+          <div>
+            <div class="grand-label">Grand Total (You + Guests)</div>
+            <div class="grand-sub">Collect from guests and include in your Zelle</div>
+          </div>
+          <div class="grand-amount" id="grand-total-amount">$30</div>
+        </div>
+      </div>
+
+      <!-- ── CURRENT POT TOTALS ── -->
+      <div class="card">
+        <h2>Current Pot Totals</h2>
+        <div class="pot-preview">
+          <div class="pot-item"><div class="pot-amount" id="pot-champ">$0</div><div class="pot-label">Champ</div></div>
+          <div class="pot-item"><div class="pot-amount" id="pot-quota">$0</div><div class="pot-label">Quota</div></div>
+          <div class="pot-item"><div class="pot-amount" id="pot-skins">$0</div><div class="pot-label">Skins</div></div>
+          <div class="pot-item"><div class="pot-amount" id="pot-ctp">$0</div><div class="pot-label">CTP</div></div>
+          <div class="pot-item"><div class="pot-amount" id="pot-blind">$0</div><div class="pot-label">Blind</div></div>
+        </div>
+        <div class="pot-count"><span id="player-count">0</span> players checked in</div>
+      </div>
+
+      <!-- ── PREFERENCES ── -->
+      <div class="card">
+        <h2>Preferences</h2>
+
+        <div class="form-group">
+          <label class="field-label" for="pairing-request">Pairing Request</label>
+          <input type="text" id="pairing-request" placeholder="Who do you want to play with?">
+        </div>
+
+        <div class="form-group">
+          <label class="field-label">If the course is Cart Path Only on event day</label>
+          <div class="radio-list">
+            <label class="radio-list-option">
+              <input type="radio" name="cartPathOnly" value="Yes, I'll still play" checked>
+              <span>Yes, I'll still play</span>
+            </label>
+            <label class="radio-list-option">
+              <input type="radio" name="cartPathOnly" value="No, I'll skip if it's Cart Path Only">
+              <span>No, I'll skip if it's Cart Path Only</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label">Are you playing from your default tee box?</label>
+          <div id="tee-info-box" class="tee-info-box" style="display:none;"></div>
+          <p id="tee-hint" class="hint-text"></p>
+          <div class="toggle-group" style="margin-top: 10px;">
+            <input type="radio" id="tee-yes" name="defaultTee" value="Yes" checked>
+            <label for="tee-yes" class="toggle-label">Yes</label>
+            <input type="radio" id="tee-no" name="defaultTee" value="No">
+            <label for="tee-no" class="toggle-label">No</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label" for="notes">Notes</label>
+          <textarea id="notes" placeholder="Anything else we should know?" rows="2"></textarea>
+        </div>
+      </div>
+
+      <!-- ── PAYMENT REMINDER ── -->
+      <div class="payment-reminder">
+        💰 <strong>Payment Reminder:</strong> Send your Zelle to <strong>floridaplayersgroup@gmail.com</strong> and include the <strong>course name and date</strong> in the memo.
       </div>
 
       <button type="submit" class="btn-submit" id="submit-button">Confirm Check-In</button>
@@ -315,28 +387,27 @@
   </main>
 
   <script>
-    // State Registry
+    // ── State ──
     let currentEventString = "";
     let systemLockoutActive = false;
     let memberRoster = [];
     let existingCheckins = [];
     let defaultTeesMap = [];
+    let currentBuyin = "allin"; // 'allin' or 'individual'
 
-    // Execution entrypoint
+    // ── Boot ──
     document.addEventListener("DOMContentLoaded", async () => {
       try {
         await bootstrapCheckInContext();
-      } catch (error) {
-        console.error("Initialization breakdown:", error);
+      } catch (err) {
+        console.error("Init error:", err);
         document.getElementById("event-display").textContent = "Error loading event configuration.";
       } finally {
         document.getElementById("loading-overlay").style.display = "none";
       }
     });
 
-    // Integrated asynchronous bootstrap data pull
     async function bootstrapCheckInContext() {
-      // Execute data pulls concurrently
       const [eventRes, membersRes, checkinsRes, teesRes] = await Promise.all([
         fetch('/api/current-event').then(r => r.json()).catch(() => null),
         fetch('/api/members').then(r => r.json()).catch(() => []),
@@ -345,53 +416,41 @@
       ]);
 
       if (!eventRes || !eventRes.eventString) {
-        document.getElementById("event-display").textContent = "No active event discovered.";
+        document.getElementById("event-display").textContent = "No active event found.";
         return;
       }
 
-      currentEventString = eventRes.eventString; // e.g., "Florida Players - Lexington Oaks, May 23"
+      currentEventString = eventRes.eventString;
       document.getElementById("event-display").textContent = currentEventString;
 
-      memberRoster = membersRes;         // Array of clean strings
-      existingCheckins = checkinsRes;     // Array of row objects [{ Event, PlayerName }]
-      defaultTeesMap = teesRes;           // Array of objects [{ Player, Course, Tee }]
+      memberRoster = membersRes;
+      existingCheckins = checkinsRes;
+      defaultTeesMap = teesRes;
 
-      // Enforce temporal cutoff validation
       evaluateLockoutThreshold(eventRes.date);
-
       if (systemLockoutActive) {
         document.getElementById("lockout-banner").style.display = "block";
         return;
       }
 
-      // Populate interactive client views
       populateRosterDropdown();
-      bindInteractiveUIEvents();
-      
-      // Attempt auto-fill recovery from localStorage
+      bindEvents();
       applySavedPlayerIdentity();
+      loadPotTotals();
 
-      // Form can safely handle input now
       document.getElementById("checkin-form").style.display = "block";
     }
 
-    // Thursday Noon EST Lockout Logic
-    function evaluateLockoutThreshold(eventDateIsoString) {
-      // Event string input format tracking: 'YYYY-MM-DD'
-      const roundDate = new Date(eventDateIsoString + 'T00:00:00');
-      
-      // Derive preceding Thursday checkpoint
-      const lockoutDate = new Date(roundDate);
-      lockoutDate.setDate(roundDate.getDate() - 2); 
-      lockoutDate.setHours(12, 0, 0, 0); // Precise Noon lock execution time
-
-      const clearNow = new Date();
-      if (clearNow > lockoutDate) {
-        systemLockoutActive = true;
-      }
+    // ── Lockout ──
+    function evaluateLockoutThreshold(isoDate) {
+      const roundDate = new Date(isoDate + 'T00:00:00');
+      const lockout = new Date(roundDate);
+      lockout.setDate(roundDate.getDate() - 2);
+      lockout.setHours(12, 0, 0, 0);
+      if (new Date() > lockout) systemLockoutActive = true;
     }
 
-    // Populate Roster
+    // ── Roster ──
     function populateRosterDropdown() {
       const select = document.getElementById("player-select");
       memberRoster.sort().forEach(name => {
@@ -402,74 +461,124 @@
       });
     }
 
-    // Events registration
-    function bindInteractiveUIEvents() {
-      const playerSelect = document.getElementById("player-select");
-      const addGuestBtn = document.getElementById("btn-add-guest");
-      const form = document.getElementById("checkin-form");
-
-      playerSelect.addEventListener("change", () => {
+    // ── Event Bindings ──
+    function bindEvents() {
+      document.getElementById("player-select").addEventListener("change", () => {
         evaluateDuplicateStatus();
         lookupDefaultTeeConfiguration();
       });
-
-      addGuestBtn.addEventListener("click", () => {
-        appendGuestInputField();
-      });
-
-      form.addEventListener("submit", handleFormSubmission);
+      document.getElementById("btn-add-guest").addEventListener("click", appendGuestInputField);
+      document.getElementById("checkin-form").addEventListener("submit", handleFormSubmission);
     }
 
-    // Strict Non-Negotiable Duplicate Check: Match event string AND selected full name completely
+    // ── Duplicate Check ──
     function evaluateDuplicateStatus() {
-      const selectedPlayer = document.getElementById("player-select").value;
-      const dupBanner = document.getElementById("duplicate-banner");
-      const submitBtn = document.getElementById("submit-button");
-
-      // Core Rule: Absolute match equality checks only
-      const matchFound = existingCheckins.some(record => {
-        return record.Event === currentEventString && record.PlayerName === selectedPlayer;
-      });
-
-      if (matchFound) {
-        dupBanner.style.display = "block";
-        submitBtn.disabled = true;
-      } else {
-        dupBanner.style.display = "none";
-        submitBtn.disabled = false;
-      }
+      const name = document.getElementById("player-select").value;
+      const found = existingCheckins.some(r => r.Event === currentEventString && r.PlayerName === name);
+      document.getElementById("duplicate-banner").style.display = found ? "block" : "none";
+      document.getElementById("submit-button").disabled = found;
     }
 
-    // Exact string course tee matching optimization
+    // ── Default Tee Lookup ──
     function lookupDefaultTeeConfiguration() {
-      const selectedPlayer = document.getElementById("player-select").value;
-      const hintElement = document.getElementById("tee-hint");
-      
-      // Cleanly separate the course name from the prefix rule and strip any trailing dates/commas safely
-      const parsingPrefix = "Florida Players - ";
-      if (!currentEventString.trim().startsWith(parsingPrefix)) {
-        hintElement.textContent = "";
-        return;
-      }
+      const name = document.getElementById("player-select").value;
+      const hint = document.getElementById("tee-hint");
+      const infoBox = document.getElementById("tee-info-box");
 
-      let extractedCourseName = currentEventString.substring(parsingPrefix.length).trim();
-      if (extractedCourseName.includes(',')) {
-        extractedCourseName = extractedCourseName.split(',')[0].trim();
-      }
+      const prefix = "Florida Players - ";
+      if (!currentEventString.trim().startsWith(prefix)) { hint.textContent = ""; infoBox.style.display = "none"; return; }
 
-      // Strict matching search sequence execution
-      const preferredRecord = defaultTeesMap.find(rec => {
-        return rec.Player === selectedPlayer && rec.Course === extractedCourseName;
-      });
+      let course = currentEventString.substring(prefix.length).trim();
+      if (course.includes(',')) course = course.split(',')[0].trim();
 
-      if (preferredRecord && preferredRecord.Tee) {
-        hintElement.textContent = `Your verified profile default here: ${preferredRecord.Tee}`;
+      // Show course tee info box (Men/Women defaults from sheet)
+      const courseDefaults = defaultTeesMap.filter(r => r.Course === course);
+      if (courseDefaults.length > 0) {
+        // Build tee info display — group by showing up to Men + Women entries
+        const mens = courseDefaults.find(r => r.Player === name); // player-specific
+        const courseTees = defaultTeesMap.filter(r => r.Course === course);
+        // Show a general course tee box using available data
+        const teeNames = [...new Set(courseTees.map(r => r.Tee).filter(Boolean))];
+        if (teeNames.length > 0) {
+          infoBox.innerHTML = `<div class="tee-info-course">Default Tees at ${course}</div>
+            <div class="tee-info-row">${teeNames.map(t => `<div class="tee-info-box-item"><div class="tee-cat">Tee</div><div class="tee-color">${t}</div></div>`).join('')}</div>`;
+          infoBox.style.display = "block";
+        } else {
+          infoBox.style.display = "none";
+        }
       } else {
-        hintElement.textContent = "No default preference tracked for this course location yet.";
+        infoBox.style.display = "none";
+      }
+
+      const record = defaultTeesMap.find(r => r.Player === name && r.Course === course);
+      if (record && record.Tee) {
+        hint.textContent = `Your verified profile default here: ${record.Tee}`;
+      } else {
+        hint.textContent = "No default preference tracked for this course location yet.";
       }
     }
 
-    // Guest DOM Management
+    // ── Buy-In Selection ──
+    function selectBuyin(type) {
+      currentBuyin = type;
+      document.getElementById("all-in-option").classList.toggle("selected", type === "allin");
+      document.getElementById("individual-option").classList.toggle("selected", type === "individual");
+      document.getElementById("games-grid").classList.toggle("show", type === "individual");
+      updateTotals();
+    }
+
+    function toggleGame(el) {
+      if (currentBuyin !== "individual") return;
+      el.classList.toggle("selected");
+      const cb = el.querySelector("input[type='checkbox']");
+      cb.checked = !cb.checked;
+      updateTotals();
+    }
+
+    function updateTotals() {
+      let playerTotal = 0;
+      if (currentBuyin === "allin") {
+        playerTotal = 30;
+      } else {
+        document.querySelectorAll(".game-option.selected").forEach(el => {
+          playerTotal += parseInt(el.dataset.price) || 0;
+        });
+        document.getElementById("individual-total").textContent = `$${playerTotal}`;
+      }
+      document.getElementById("player-total").textContent = `$${playerTotal}`;
+      updateGrandTotal(playerTotal);
+    }
+
+    function updateGrandTotal(playerTotal) {
+      const guestCount = document.querySelectorAll(".guest-row").length;
+      const grandCard = document.getElementById("grand-total-card");
+      if (guestCount > 0) {
+        // Guests always pay $30 (All In) for simplicity — can be extended later
+        const grandTotal = playerTotal + (guestCount * 30);
+        document.getElementById("grand-total-amount").textContent = `$${grandTotal}`;
+        grandCard.style.display = "block";
+      } else {
+        grandCard.style.display = "none";
+      }
+    }
+
+    // ── Pot Totals (calculated from existing checkins) ──
+    function loadPotTotals() {
+      const eventCheckins = existingCheckins.filter(r => r.Event === currentEventString);
+      const count = eventCheckins.length;
+      document.getElementById("player-count").textContent = count;
+
+      // Calculate pots based on checked-in players (All In = $30 each contributes to all 5 pots)
+      // This is approximate without per-game breakdown from the API — shows count-based estimate
+      const allInCount = count; // treat all as all-in for pot display purposes
+      document.getElementById("pot-champ").textContent = `$${allInCount * 5}`;
+      document.getElementById("pot-quota").textContent = `$${allInCount * 5}`;
+      document.getElementById("pot-skins").textContent = `$${allInCount * 10}`;
+      document.getElementById("pot-ctp").textContent = `$${allInCount * 5}`;
+      document.getElementById("pot-blind").textContent = `$${allInCount * 5}`;
+    }
+
+    // ── Guests ──
     function appendGuestInputField() {
       const wrapper = document.getElementById("guests-wrapper");
       const row = document.createElement("div");
@@ -478,32 +587,27 @@
       const input = document.createElement("input");
       input.type = "text";
       input.placeholder = "Guest Full Name";
-      input.required = true;
 
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
       removeBtn.className = "btn-remove-guest";
       removeBtn.textContent = "×";
-      removeBtn.addEventListener("click", () => row.remove());
+      removeBtn.addEventListener("click", () => { row.remove(); updateTotals(); });
 
       row.appendChild(input);
       row.appendChild(removeBtn);
       wrapper.appendChild(row);
-      
-      // Instantly position display focusing to field target
       input.focus();
+      updateTotals();
     }
 
-    // Local Storage Recovery
+    // ── LocalStorage ──
     function applySavedPlayerIdentity() {
-      const retainedIdentityName = localStorage.getItem("fpg_player_name");
-      if (!retainedIdentityName) return;
-
+      const saved = localStorage.getItem("fpg_player_name");
+      if (!saved) return;
       const select = document.getElementById("player-select");
-      
-      // Verify profile match index target explicitly
       for (let i = 0; i < select.options.length; i++) {
-        if (select.options[i].value === retainedIdentityName) {
+        if (select.options[i].value === saved) {
           select.selectedIndex = i;
           evaluateDuplicateStatus();
           lookupDefaultTeeConfiguration();
@@ -512,68 +616,81 @@
       }
     }
 
-    // Submit Processing Handler
+    // ── Submit ──
     async function handleFormSubmission(e) {
       e.preventDefault();
-      
       const submitBtn = document.getElementById("submit-button");
       const successBanner = document.getElementById("success-banner");
-      const errorBanner = document.getElementById("duplicate-banner"); // Reused container layout space
-      
-      const selectedPlayer = document.getElementById("player-select").value;
-      const teeSelectionPreference = document.querySelector('input[name="teePreference"]:checked').value;
-      const pairingNotes = document.getElementById("pairing-request").value;
 
-      // Map guests exactly matching structure requirement layout rule: "{Guest Name} (Guest of {Player Name})"
-      const guestRows = document.querySelectorAll(".guest-row input");
-      const compiledGuestsArray = [];
-      guestRows.forEach(input => {
-        const cleanName = input.value.trim();
-        if (cleanName) {
-          compiledGuestsArray.push(`${cleanName} (Guest of ${selectedPlayer})`);
-        }
-      });
-      const guestsDataPayloadString = compiledGuestsArray.join(", ");
+      const playerName = document.getElementById("player-select").value;
+      const pairingRequest = document.getElementById("pairing-request").value;
+      const cartPathOnly = document.querySelector('input[name="cartPathOnly"]:checked').value;
+      const defaultTee = document.querySelector('input[name="defaultTee"]:checked').value;
+      const notes = document.getElementById("notes").value;
 
-      // Final dynamic runtime verification step
-      if (systemLockoutActive) {
-        alert("Submission rejected. The registration window closed Thursday at Noon.");
-        return;
+      // Games
+      let quickSelection, individualGames, totalPayment;
+      if (currentBuyin === "allin") {
+        quickSelection = "ALL IN - $30 (All 5 games)";
+        individualGames = "";
+        totalPayment = 30;
+      } else {
+        const selected = [];
+        let total = 0;
+        document.querySelectorAll(".game-option.selected").forEach(el => {
+          selected.push(el.querySelector("input").value);
+          total += parseInt(el.dataset.price) || 0;
+        });
+        quickSelection = "Individual Selection";
+        individualGames = selected.join(", ");
+        totalPayment = total;
       }
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Submitting Check-In...";
+      // Guests
+      const guestInputs = document.querySelectorAll(".guest-row input");
+      const guestNames = [];
+      guestInputs.forEach(input => {
+        const name = input.value.trim();
+        if (name) guestNames.push(`${name} (Guest of ${playerName})`);
+      });
 
-      const requestPayload = {
+      if (systemLockoutActive) { alert("Registration window is closed."); return; }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+
+      const payload = {
         event: currentEventString,
-        playerName: selectedPlayer,
-        guestNames: guestsDataPayloadString,
-        usesDefaultTees: teeSelectionPreference, // 'Yes' or 'No'
-        notes: pairingNotes
+        playerName,
+        guestNames: guestNames.join(", "),
+        quickSelection,
+        individualGames,
+        totalPayment,
+        pairingRequest,
+        cartPathOnly,
+        defaultTee,
+        notes
       };
 
       try {
-        const submissionResult = await fetch('/api/player-checkin', {
+        const res = await fetch('/api/player-checkin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestPayload)
+          body: JSON.stringify(payload)
         });
 
-        if (submissionResult.ok) {
-          // Write identity trace configuration target locally
-          localStorage.setItem("fpg_player_name", selectedPlayer);
-          
-          // Clear view elements display states completely 
+        if (res.ok) {
+          localStorage.setItem("fpg_player_name", playerName);
           document.getElementById("checkin-form").style.display = "none";
-          errorBanner.style.display = "none";
+          document.getElementById("duplicate-banner").style.display = "none";
           successBanner.style.display = "block";
           window.scrollTo(0, 0);
         } else {
-          throw new Error("API registration processing failure code status response.");
+          throw new Error("Server error");
         }
       } catch (err) {
-        console.error("Submission Failure Profile:", err);
-        alert("Connection error: Failed to safely commit check-in row directly to central database.");
+        console.error("Submit error:", err);
+        alert("Connection error. Please try again.");
         submitBtn.disabled = false;
         submitBtn.textContent = "Confirm Check-In";
       }
