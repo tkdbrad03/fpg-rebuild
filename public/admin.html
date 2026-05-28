@@ -472,6 +472,12 @@
           <label style="font-weight:600; color:var(--gray);">Start Time</label>
           <input type="time" id="start-time" value="10:00">
         </div>
+        <div class="tee-time-config">
+  <label style="font-weight:600; color:var(--gray);">Gaming Coordinator</label>
+  <select id="gc-select" onchange="gamingCoordinator = this.value" style="border:none; outline:none; font-size:0.85rem; color:var(--dark); background:transparent;">
+    <option value="">-- Select GC --</option>
+  </select>
+</div>
         <button class="btn btn-ghost btn-sm" onclick="addGroup()">+ Add Group</button>
         <button class="btn btn-ghost btn-sm" onclick="clearAllGroups()">Clear All</button>
         <button class="btn btn-gold" onclick="publishPairings()" id="publish-btn">Publish Pairings</button>
@@ -570,6 +576,7 @@
     let paymentStatus = {};
     let groupCounter = 0;
     let memberHandicaps = {};
+    let gamingCoordinator = null; // single player name for entire round
 
     // ── Boot ──
     document.addEventListener('DOMContentLoaded', async () => {
@@ -761,13 +768,19 @@
           </div>`;
       }).join('');
     }
-
+function updateGCDropdown() {
+  const sel = document.getElementById('gc-select');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">-- Select GC --</option>' +
+    allCheckins.map(c => `<option value="${c.playerName}" ${c.playerName === current ? 'selected' : ''}>${c.playerName}</option>`).join('');
+  if (current) sel.value = current;
+}
     function filterPool() { renderPool(); }
 
     // ── GROUPS ──
     function addGroup() {
       groupCounter++;
-      groups.push({ id: groupCounter, players: [], teeTime: calcTeeTime(groupCounter - 1) });
+      groups.push({ id: groupCounter, players: [], teeTime: calcTeeTime(groupCounter - 1), sk1: null, sk2: null });
       renderGroups();
       renderPool();
     }
@@ -841,24 +854,38 @@ function removeFromGroup(groupId, playerName) {
           <div class="group-players-list">
             ${g.players.length === 0
               ? `<div class="group-empty">Click a player from the pool to assign here.</div>`
-: g.players.map(p => {
+: g.players.map((p, pIdx) => {
     const name = typeof p === 'string' ? p : p.name;
     const isGuest = typeof p === 'object' && p.isGuest;
     const hcp = typeof p === 'object' ? p.handicap : memberHandicaps[name];
+    const isSK1 = g.sk1 === name;
+    const isSK2 = g.sk2 === name;
     return `
       <div class="group-player-chip">
-        <div>
-          <span>${name}</span>
+        <div style="flex:1;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span>${name}</span>
+            ${isSK1 ? '<span class="badge" style="background:#fff3cd; color:#856404;">SK1</span>' : ''}
+            ${isSK2 ? '<span class="badge" style="background:#fff3cd; color:#856404;">SK2</span>' : ''}
+            ${gamingCoordinator === name ? '<span class="badge" style="background:#cfe2ff; color:#084298;">GC</span>' : ''}
+          </div>
           ${isGuest ? `
             <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
               <span style="font-size:0.72rem; color:var(--gray);">HCP:</span>
               <input type="number" step="0.1" min="0" max="54"
                 style="width:60px; padding:2px 6px; border:1px solid var(--line); border-radius:4px; font-size:0.78rem;"
-                placeholder="—"
-                value="${hcp || ''}"
+                placeholder="—" value="${hcp || ''}"
                 onchange="updateGuestHandicap(${g.id}, '${name.replace(/'/g,"\\'")}', this.value)">
-            </div>` 
+            </div>`
           : `<div style="font-size:0.72rem; color:var(--gray); margin-top:2px;">HCP: ${hcp ?? '—'}</div>`}
+          <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;">
+            <select style="font-size:0.72rem; padding:2px 6px; border:1px solid var(--line); border-radius:4px;"
+              onchange="assignSK(${g.id}, '${name.replace(/'/g,"\\'")}', this.value)">
+              <option value="">No SK role</option>
+              <option value="sk1" ${isSK1 ? 'selected' : ''}>SK1 (Primary)</option>
+              <option value="sk2" ${isSK2 ? 'selected' : ''}>SK2 (Backup)</option>
+            </select>
+          </div>
         </div>
         <button class="chip-remove" onclick="removeFromGroup(${g.id}, '${name.replace(/'/g,"\\'")}')">×</button>
       </div>`;
@@ -871,6 +898,17 @@ function removeFromGroup(groupId, playerName) {
           </div>
         </div>`).join('');
     }
+    function assignSK(groupId, playerName, role) {
+  const group = groups.find(g => g.id === groupId);
+  if (!group) return;
+  // Clear this player from any existing SK role in this group
+  if (group.sk1 === playerName) group.sk1 = null;
+  if (group.sk2 === playerName) group.sk2 = null;
+  // Assign new role
+  if (role === 'sk1') group.sk1 = playerName;
+  if (role === 'sk2') group.sk2 = playerName;
+  renderGroups();
+}
 
     async function publishPairings() {
       if (groups.length === 0) { showToast('No groups to publish.', 'error'); return; }
@@ -892,8 +930,8 @@ function removeFromGroup(groupId, playerName) {
   const handicap = (typeof p === 'object' && p.handicap) ? p.handicap : (memberHandicaps[name] || 0);
   return { name, handicap, quota: 0, strokes: 0 };
 }),
-          scorekeepers: [],
-          gamingCoordinator: null
+          scorekeepers: [g.sk1, g.sk2].filter(Boolean),
+gamingCoordinator: gamingCoordinator || null
         }))
       };
 
