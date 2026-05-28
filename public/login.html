@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - FPG Expenditure System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: white;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .login-container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(45, 80, 22, 0.15);
+      max-width: 450px;
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .login-header {
+      background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      background: white;
+      border-radius: 50%;
+      padding: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    
+    .login-header h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #FFD700;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    }
+    
+    .login-header p {
+      opacity: 0.95;
+      font-size: 14px;
+      color: white;
+    }
+    
+    .login-form {
+      padding: 40px;
+      background: white;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #2d5016;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #4a7c2c;
+      box-shadow: 0 0 0 3px rgba(74, 124, 44, 0.1);
+    }
+    
+    .btn-login {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(45, 80, 22, 0.3);
+    }
+    
+    .btn-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(45, 80, 22, 0.4);
+    }
+    
+    .btn-login:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .error-message {
+      display: none;
+      background: #fff5f5;
+      color: #c53030;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      border-left: 4px solid #c53030;
+    }
+    
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 12px;
+      background: #f9f9f9;
+      border-top: 1px solid #e0e0e0;
+    }
+    
+    .leadership-badge {
+      background: #FFD700;
+      color: #2d5016;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="logo">
+        <img src="/logo.png" alt="FPG Logo">
+      </div>
+      <h1>Florida Players Group</h1>
+<p>Good Golf · Good Friends · Good Times</p>
+    </div>
+    
+    <div class="login-form">
+      <div class="error-message" id="errorMessage"></div>
+      
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your username">
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
+        </div>
+        <div style="text-align: right; margin: -10px 0 15px 0;">
+    <a href="/forgot-password.html" style="color: #2D5016; font-size: 13px; text-decoration: none;">Forgot your password?</a>
+</div>
+        <button type="submit" class="btn-login" id="loginBtn">
+          Sign In
+        </button>
+      </form>
+    </div>
+    
+    <div class="footer">
+      Florida Players Group<br>
+      Good Golf • Good Friends • Good Times
+    </div>
+  </div>
+  
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('loginBtn');
+      const errorMessage = document.getElementById('errorMessage');
+      
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Signing in...';
+      errorMessage.style.display = 'none';
+      
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+  // Store token
+  localStorage.setItem('fpg_token', data.token);
+  localStorage.setItem('fpg_user', JSON.stringify(data.user));
+  
+  // Trigger PWA install prompt
+  if (window.FPG_PWA && window.FPG_PWA.onLoginSuccess) {
+    window.FPG_PWA.onLoginSuccess();
+  }
+  
+  // Check for return URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const returnUrl = urlParams.get('returnUrl');
+  
+  // Redirect to return URL or default to dashboard
+  window.location.href = returnUrl || '/dashboard.html';
+}
+      } catch (error) {
+        errorMessage.textContent = error.message;
+        errorMessage.style.display = 'block';
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign In';
+      }
+    });
+  </script>
+  <script src="/pwa-handler.js"></script>
+</body>
+</html>
