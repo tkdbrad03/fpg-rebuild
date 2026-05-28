@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/api/current-event", "dest": "/api/current-event.js" },
+    { "src": "/api/members", "dest": "/api/members.js" },
+    { "src": "/api/checkins", "dest": "/api/checkins.js" },
+    { "src": "/api/default-tees", "dest": "/api/default-tees.js" },
+    { "src": "/api/player-checkin", "dest": "/api/player-checkin.js" },
+    { "src": "/api/get-pairings", "dest": "/api/get-pairings.js" },
+    { "src": "/api/publish-pairings", "dest": "/api/publish-pairings.js" },
+    { "src": "/api/admin-checkins", "dest": "/api/admin-checkins.js" },
+    { "src": "/api/auth/login", "dest": "/api/auth/login.js" },
+    { "src": "/api/auth/verify-token", "dest": "/api/auth/verify-token.js" },
+    { "src": "/api/auth/forgot-password", "dest": "/api/auth/forgot-password.js" },
+    { "src": "/api/auth/reset-password", "dest": "/api/auth/reset-password.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}
