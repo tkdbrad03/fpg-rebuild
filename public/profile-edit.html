@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2D5016">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="/force-relogin-fix.js"></script>
+    <title>Edit Profile - Florida Players Group</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2D5016 0%, #3d6b1e 100%);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+        .header h1 {
+            color: #F5C518;
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        /* Content */
+        .content {
+            padding: 20px;
+        }
+        
+        /* Photo Upload Section */
+        .photo-section {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        
+        .photo-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2D5016, #3d6b1e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 48px;
+            font-weight: 700;
+            color: #F5C518;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .photo-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(45, 80, 22, 0.3);
+        }
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .photo-preview .upload-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 8px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .photo-input {
+            display: none;
+        }
+        
+        .photo-hint {
+            font-size: 13px;
+            color: #888;
+            margin-top: 8px;
+        }
+        
+        /* Form Card */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2D5016;
+            margin-bottom: 20px;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e8ecd9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #2D5016;
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+        
+        .form-input:disabled {
+            background: #f5f5f5;
+            color: #888;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 6px;
+        }
+        
+        /* Save Button */
+        .save-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #2D5016, #3d6b1e);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+        }
+        
+        .save-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Status Messages */
+        .status-message {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .status-message.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        
+        .status-message.error {
+            display: block;
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+        
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #888;
+            font-size: 11px;
+        }
+        .nav-item.active { color: #2D5016; }
+        .nav-item .icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Check -->
+    <script>
+        (function() {
+            const token = localStorage.getItem('fpg_token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (Date.now() >= payload.exp * 1000) {
+                    localStorage.removeItem('fpg_token');
+                    localStorage.removeItem('fpg_user');
+                    window.location.href = '/login.html';
+                }
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        })();
+    </script>
+
+    <!-- Header -->
+    <div class="header">
+        <a href="/more.html" class="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <h1>Edit Profile</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Status Message -->
+        <div class="status-message" id="statusMessage"></div>
+        
+        <!-- Photo Upload -->
+        <div class="photo-section">
+            <div class="photo-preview" id="photoPreview" onclick="document.getElementById('photoInput').click()">
+                <span id="photoInitials">?</span>
+                <div class="upload-overlay">Tap to change</div>
+            </div>
+            <input type="file" id="photoInput" class="photo-input" accept="image/*" onchange="handlePhotoSelect(event)">
+            <p class="photo-hint">Tap the photo to upload a new picture</p>
+        </div>
+        
+        <!-- Profile Info -->
+        <div class="card">
+            <h2>Profile Information</h2>
+            
+            <div class="form-group">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-input" id="nameInput" disabled>
+                <p class="form-hint">Contact leadership to update your name</p>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Handicap</label>
+                <input type="text" class="form-input" id="handicapInput" disabled>
+                <p class="form-hint">Updated automatically from GHIN</p>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Favorite Course</label>
+                <input type="text" class="form-input" id="favoriteCourseInput" placeholder="Enter your favorite golf course">
+            </div>
+        </div>
+        
+        <!-- Save Button -->
+        <button class="save-btn" id="saveBtn" onclick="saveProfile()">
+            Save Changes
+        </button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="/dashboard.html" class="nav-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="/pairings.html" class="nav-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Pairings</span>
+        </a>
+        <a href="/standings.html" class="nav-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 20V10"></path>
+                <path d="M12 20V4"></path>
+                <path d="M6 20v-6"></path>
+            </svg>
+            <span>Standings</span>
+        </a>
+        <a href="/more.html" class="nav-item active">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+            </svg>
+            <span>More</span>
+        </a>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('fpg_user') || '{}');
+        let selectedPhotoFile = null;
+        let currentPhotoUrl = null;
+
+        // Load current user data - FIXED: Now matches by email first
+        async function loadProfile() {
+            let displayName = user.name || user.username || '';
+            
+            // Set initial name and initials
+            if (displayName) {
+                document.getElementById('nameInput').value = displayName;
+                updateInitials(displayName);
+            }
+
+            // Load member data from FPG Members sheet
+            try {
+                const res = await fetch('https://docs.google.com/spreadsheets/d/152dK2m3gluxCdBal9GGLs43aDKFBvy5BiHdnKL3gV4o/export?format=csv&gid=30647527');
+                const text = await res.text();
+                const rows = parseCSV(text).slice(1); // Skip header row
+                
+                // FPG Members columns: A=Golf Name, B=GHIN HCP, C=Email, D=Phone, E=Can Scorekeeper, 
+                // F=Default Tee, G=Active, H=Favorite Course, I=Photo URL
+                
+                let memberRow = null;
+                
+                // PRIMARY MATCH: By email (most reliable - fixes Ray/BeSean bug)
+                const userEmail = (user.email || '').toLowerCase().trim();
+                if (userEmail) {
+                    memberRow = rows.find(row => {
+                        const rowEmail = (row[2] || '').toLowerCase().trim(); // Column C = Email
+                        return rowEmail === userEmail;
+                    });
+                }
+                
+                // FALLBACK: Exact first name match only (no partial matching)
+                if (!memberRow) {
+                    const searchName = (user.name || user.username || '').toLowerCase().trim();
+                    if (searchName) {
+                        memberRow = rows.find(row => {
+                            const fullName = (row[0] || '');
+                            // Extract first name, removing any nickname in quotes
+                            const firstName = fullName.split(' ')[0].replace(/['"]/g, '').toLowerCase().trim();
+                            return firstName === searchName;
+                        });
+                    }
+                }
+
+                if (memberRow) {
+                    // Update display with matched member data
+                    const fullName = memberRow[0] || displayName;
+                    document.getElementById('nameInput').value = fullName;
+                    document.getElementById('handicapInput').value = memberRow[1] || 'N/A';
+                    document.getElementById('favoriteCourseInput').value = memberRow[7] || '';
+                    currentPhotoUrl = memberRow[8] || null;
+                    
+                    // Update initials from full name
+                    updateInitials(fullName);
+                    
+                    // Show photo if available
+                    if (currentPhotoUrl) {
+                        showPhotoPreview(currentPhotoUrl);
+                    }
+                } else {
+                    console.warn('No matching member found for:', userEmail || user.name || user.username);
+                }
+            } catch (err) {
+                console.error('Error loading profile:', err);
+            }
+        }
+
+        // Helper to update initials display
+        function updateInitials(name) {
+            const cleanName = name.replace(/['"][^'"]+['"]/g, '').replace(/\s+/g, ' ').trim();
+            const parts = cleanName.split(' ').filter(p => p);
+            let initials = '?';
+            if (parts.length >= 2) {
+                initials = (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            } else if (parts.length === 1 && parts[0].length >= 2) {
+                initials = parts[0].substring(0, 2).toUpperCase();
+            }
+            document.getElementById('photoInitials').textContent = initials;
+        }
+
+        // Parse CSV helper
+        function parseCSV(text) {
+            const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n');
+            return lines.map(line => {
+                const out = []; let cur = ''; let inQuotes = false;
+                for (let i = 0; i < line.length; i++) {
+                    const ch = line[i];
+                    if (ch === '"') {
+                        if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+                        else { inQuotes = !inQuotes; }
+                    } else if (ch === ',' && !inQuotes) { out.push(cur); cur = ''; }
+                    else { cur += ch; }
+                }
+                out.push(cur);
+                return out.map(v => v.trim());
+            });
+        }
+
+        // Handle photo selection
+        function handlePhotoSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showStatus('Please select an image file.', 'error');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showStatus('Image must be less than 5MB.', 'error');
+                return;
+            }
+
+            selectedPhotoFile = file;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                showPhotoPreview(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Show photo in preview
+        function showPhotoPreview(src) {
+            const preview = document.getElementById('photoPreview');
+            const initials = document.getElementById('photoInitials');
+            
+            let img = preview.querySelector('img');
+            if (!img) {
+                img = document.createElement('img');
+                preview.insertBefore(img, initials);
+            }
+            
+            img.src = src;
+            initials.style.display = 'none';
+        }
+
+        // Save profile
+        async function saveProfile() {
+            const btn = document.getElementById('saveBtn');
+            const favoriteCourse = document.getElementById('favoriteCourseInput').value.trim();
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Saving...';
+
+            try {
+                let photoUrl = currentPhotoUrl;
+
+                if (selectedPhotoFile) {
+                    const formData = new FormData();
+                    formData.append('file', selectedPhotoFile);
+                    formData.append('username', user.username || user.name);
+
+                    const uploadRes = await fetch('/api/upload-photo', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (uploadRes.ok) {
+                        const uploadData = await uploadRes.json();
+                        photoUrl = uploadData.url;
+                    } else {
+                        throw new Error('Failed to upload photo');
+                    }
+                }
+
+                const updateRes = await fetch('/api/update-profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: user.username || user.name,
+                        email: user.email, // Include email for reliable matching
+                        favoriteCourse: favoriteCourse,
+                        photoUrl: photoUrl
+                    })
+                });
+
+                if (!updateRes.ok) {
+                    throw new Error('Failed to update profile');
+                }
+
+                showStatus('Profile updated successfully!', 'success');
+                
+                user.favoriteCourse = favoriteCourse;
+                if (photoUrl) user.photoUrl = photoUrl;
+                localStorage.setItem('fpg_user', JSON.stringify(user));
+
+            } catch (err) {
+                console.error('Error saving profile:', err);
+                showStatus('Unable to save changes. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Changes';
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = message;
+            el.className = 'status-message ' + type;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    el.className = 'status-message';
+                }, 3000);
+            }
+        }
+
+        // Load profile on page load
+        loadProfile();
+    </script>
+    <script src="/pwa-handler.js"></script>
+</body>
+</html>

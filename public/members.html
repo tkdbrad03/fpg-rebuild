@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2D5016">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Members - Florida Players Group</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9f5;
+            color: #333;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2D5016 0%, #3d6b1e 100%);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+        .header h1 {
+            color: #F5C518;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* Search Bar */
+        .search-container {
+            padding: 16px 20px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 2px solid #e8ecd9;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #f8f9f5 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #2D5016;
+            background-color: white;
+        }
+
+        /* Intro Section */
+        .intro-section {
+            background: white;
+            padding: 24px 20px;
+            margin: 16px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .intro-section h2 {
+            font-size: 24px;
+            color: #2D5016;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .intro-section p {
+            color: #666;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Members Grid */
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 0 16px 16px;
+        }
+
+        /* Member Card */
+        .member-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            text-align: center;
+            transition: all 0.3s ease;
+            border-top: 4px solid #2D5016;
+        }
+        .member-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .member-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2D5016, #3d6b1e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 36px;
+            font-weight: 700;
+            color: #F5C518;
+            overflow: hidden;
+        }
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .member-name {
+            font-size: 20px;
+            color: #2D5016;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .member-handicap {
+            display: inline-block;
+            background: #e8f3dd;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2D5016;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .member-details {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .contact-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2D5016, #3d6b1e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e8ecd9;
+            border-top-color: #2D5016;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        /* Message Modal */
+        .message-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .message-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e8ecd9;
+            background: linear-gradient(135deg, #2D5016, #3d6b1e);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #F5C518;
+        }
+        .close-modal {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .close-modal:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #2D5016;
+            font-size: 14px;
+        }
+        .form-input,
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e8ecd9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #2D5016;
+        }
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        .form-input:disabled {
+            background: #f8f9f5;
+            cursor: not-allowed;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            padding: 20px;
+            border-top: 1px solid #e8ecd9;
+        }
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            color: #2D5016;
+            border: 2px solid #e8ecd9;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-cancel:hover {
+            background: #f8f9f5;
+        }
+        .btn-send {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #2D5016, #3d6b1e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+        }
+
+        /* Success Modal */
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .success-modal.active {
+            display: flex;
+        }
+        .success-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            animation: bounceIn 0.6s;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #e8f3dd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            color: #2D5016;
+        }
+        .success-title {
+            font-size: 24px;
+            color: #2D5016;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        .success-message {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #888;
+            font-size: 11px;
+        }
+        .nav-item.active { color: #2D5016; }
+        .nav-item .icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+        }
+
+        @media (max-width: 640px) {
+            .members-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ghin-edit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: 1px solid #d4af37;
+            color: #b8962e;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+        .ghin-edit-btn:hover { background: #fffbeb; }
+        .ghin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1002;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .ghin-modal.active { display: flex; }
+        .ghin-modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            width: 100%;
+            max-width: 340px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .ghin-modal-title { font-size: 17px; font-weight: 700; color: #2D5016; margin-bottom: 4px; }
+        .ghin-modal-sub { font-size: 13px; color: #888; margin-bottom: 16px; }
+        .ghin-modal input {
+            width: 100%; padding: 11px 14px; border: 2px solid #e8ecd9;
+            border-radius: 10px; font-size: 16px; margin-bottom: 16px;
+        }
+        .ghin-modal input:focus { outline: none; border-color: #2D5016; }
+        .ghin-modal-actions { display: flex; gap: 10px; }
+        .ghin-modal-status { font-size: 13px; margin-bottom: 12px; padding: 8px 12px; border-radius: 8px; display: none; }
+    </style>
+</head>
+<body>
+    <!-- Auth Check -->
+    <script>
+        (function() {
+            const token = localStorage.getItem('fpg_token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                if (Date.now() >= payload.exp * 1000) {
+                    localStorage.removeItem('fpg_token');
+                    localStorage.removeItem('fpg_user');
+                    window.location.href = '/login.html';
+                }
+            } catch (e) {
+                window.location.href = '/login.html';
+            }
+        })();
+    </script>
+
+    <!-- Header -->
+    <div class="header">
+        <a href="/dashboard.html" class="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </a>
+        <h1>Member Directory</h1>
+    </div>
+
+    <!-- Search -->
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search members...">
+    </div>
+
+    <!-- Intro Section -->
+    <div class="intro-section">
+        <h2>Meet Your Fellow Golfers</h2>
+        <p>Connect with the amazing players of Florida Players Group. Good Golf · Good Friends · Good Times.</p>
+    </div>
+
+    <!-- Members Grid -->
+    <div class="members-grid" id="membersGrid">
+        <div class="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading members...</p>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="/dashboard.html" class="nav-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Home</span>
+        </a>
+        <a href="/pairings.html" class="nav-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Pairings</span>
+        </a>
+        <a href="/standings.html" class="nav-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 20V10"></path>
+                <path d="M12 20V4"></path>
+                <path d="M6 20v-6"></path>
+            </svg>
+            <span>Standings</span>
+        </a>
+        <a href="/more.html" class="nav-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="12" cy="5" r="1"></circle>
+                <circle cx="12" cy="19" r="1"></circle>
+            </svg>
+            <span>More</span>
+        </a>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="message-modal" id="messageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Send Message</h3>
+                <button class="close-modal" onclick="closeMessageModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="messageForm">
+                    <div class="form-group">
+                        <label class="form-label">To:</label>
+                        <input type="text" class="form-input" id="recipientName" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-input" id="messageSubject" placeholder="Enter subject..." required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-textarea" id="messageBody" placeholder="Type your message..." required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeMessageModal()">Cancel</button>
+                <button class="btn-send" onclick="sendMessage()">Send Message</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">✓</div>
+            <h3 class="success-title">Message Sent!</h3>
+            <p class="success-message">Your message has been delivered successfully.</p>
+            <button class="btn-send" onclick="closeSuccessModal()">Done</button>
+        </div>
+    </div>
+
+    <script>
+        // Google Sheets CSV URLs
+        const MEMBERS_CSV_URL = 'https://docs.google.com/spreadsheets/d/152dK2m3gluxCdBal9GGLs43aDKFBvy5BiHdnKL3gV4o/export?format=csv&gid=30647527';
+        const PLAYER_QUOTAS_CSV_URL = 'https://docs.google.com/spreadsheets/d/152dK2m3gluxCdBal9GGLs43aDKFBvy5BiHdnKL3gV4o/export?format=csv&gid=1208253847';
+        
+        let allMembers = [];
+        let currentRecipient = null;
+        let handicapLookup = {}; // Store handicaps from Player Quotas
+
+        // Parse CSV
+        function parseCSV(text) {
+            const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim().split('\n');
+            return lines.map(line => {
+                const out = []; let cur = ''; let inQuotes = false;
+                for (let i = 0; i < line.length; i++) {
+                    const ch = line[i];
+                    if (ch === '"') {
+                        if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+                        else { inQuotes = !inQuotes; }
+                    } else if (ch === ',' && !inQuotes) { out.push(cur); cur = ''; }
+                    else { cur += ch; }
+                }
+                out.push(cur);
+                return out.map(v => v.trim());
+            });
+        }
+
+        // Get initials from name
+        function getInitials(name) {
+            if (!name) return '?';
+            // Remove nickname in quotes/apostrophes for initials
+            const cleanName = name.replace(/['"][^'"]+['"]/g, '').replace(/\s+/g, ' ').trim();
+            const parts = cleanName.split(' ').filter(p => p);
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            }
+            return name.substring(0, 2).toUpperCase();
+        }
+
+        // Load handicaps from Player Quotas sheet
+        async function loadHandicaps() {
+            try {
+                const res = await fetch(PLAYER_QUOTAS_CSV_URL);
+                const text = await res.text();
+                const rows = parseCSV(text);
+                
+                // Skip header row - Column A=Name, B=Handicap, C=Quota
+                const dataRows = rows.slice(1);
+                
+                handicapLookup = {};
+                dataRows.forEach(row => {
+                    const name = (row[0] || '').trim();
+                    const handicap = row[1] || '';
+                    if (name) {
+                        handicapLookup[name] = handicap;
+                    }
+                });
+                
+                console.log('Loaded handicaps for', Object.keys(handicapLookup).length, 'players');
+            } catch (err) {
+                console.error('Error loading handicaps:', err);
+            }
+        }
+
+        // Load members from Google Sheet
+        async function loadMembers() {
+            const grid = document.getElementById('membersGrid');
+            
+            try {
+                // First load handicaps from Player Quotas
+                await loadHandicaps();
+                
+                // Then load member info from FPG Members
+                const res = await fetch(MEMBERS_CSV_URL);
+                const text = await res.text();
+                const rows = parseCSV(text);
+                
+                // Skip header row
+                const dataRows = rows.slice(1);
+                
+                // Column mapping for FPG Members sheet:
+                // A(0)=Golf Name, B(1)=GHIN HCP (ignored - using Player Quotas), C(2)=Email, D(3)=Phone, 
+                // E(4)=Can Scorekeeper, F(5)=Default Tee, G(6)=Active, H(7)=Favorite Course
+                allMembers = dataRows
+                    .filter(row => row[0] && row[6]?.toLowerCase() === 'yes') // Only active members
+                    .map(row => {
+                        const name = row[0] || '';
+                        // Look up handicap from Player Quotas sheet
+                        const handicap = handicapLookup[name] || 'N/A';
+                        return {
+                            name: name,
+                            handicap: handicap,
+                            email: row[2] || '',
+                            favoriteCourse: row[7] || '',
+                            photoUrl: row[8] || null // Column I for photo URL (future)
+                        };
+                    })
+                    .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+
+                renderMembers(allMembers);
+                
+            } catch (err) {
+                console.error('Error loading members:', err);
+                grid.innerHTML = '<div class="no-results">Unable to load members. Please try again.</div>';
+            }
+        }
+
+        // Check if current user is admin/leadership
+        const currentUser = JSON.parse(localStorage.getItem('fpg_user') || '{}');
+        const isAdmin = ['administrator', 'leadership'].includes((currentUser.role || '').toLowerCase());
+
+        // Render member cards
+        function renderMembers(members) {
+            const grid = document.getElementById('membersGrid');
+            
+            if (!members.length) {
+                grid.innerHTML = '<div class="no-results">No members found.</div>';
+                return;
+            }
+
+            grid.innerHTML = members.map(member => `
+                <div class="member-card">
+                    <div class="member-avatar">
+                        ${member.photoUrl 
+                            ? `<img src="${member.photoUrl}" alt="${member.name}">`
+                            : getInitials(member.name)
+                        }
+                    </div>
+                    <h3 class="member-name">${member.name}</h3>
+                    <div class="member-handicap">Handicap: ${member.handicap}</div>
+                    ${isAdmin ? `<button class="ghin-edit-btn" onclick="openGhinModal('${member.name.replace(/'/g, "\\'")}', '${member.handicap}')">✏️ Update GHIN HCP</button>` : ''}
+                    ${member.favoriteCourse ? `<div class="member-details">Favorite Course: ${member.favoriteCourse}</div>` : ''}
+                    <button class="contact-btn" onclick="openMessageModal('${member.name.replace(/'/g, "\\'")}', '${member.email}')">Send Message</button>
+                </div>
+            `).join('');
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const filtered = allMembers.filter(m => 
+                m.name.toLowerCase().includes(query)
+            );
+            renderMembers(filtered);
+        });
+
+        // Message Modal functions
+        function openMessageModal(name, email) {
+            currentRecipient = { name, email };
+            document.getElementById('recipientName').value = name;
+            document.getElementById('messageModal').classList.add('active');
+        }
+
+        function closeMessageModal() {
+            document.getElementById('messageModal').classList.remove('active');
+            document.getElementById('messageForm').reset();
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.remove('active');
+        }
+
+        async function sendMessage() {
+            const subject = document.getElementById('messageSubject').value;
+            const body = document.getElementById('messageBody').value;
+
+            if (!subject || !body) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            // Get current user
+            const user = JSON.parse(localStorage.getItem('fpg_user') || '{}');
+            
+            // Find sender's email from members list
+            const senderName = (user.name || user.username || '').toLowerCase().trim();
+            const sender = allMembers.find(m => m.name.toLowerCase().trim().includes(senderName));
+            const senderEmail = sender?.email || 'member@fpg.com';
+
+            try {
+                // Send via API
+                const response = await fetch('/api/send-message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: currentRecipient.email,
+                        toName: currentRecipient.name,
+                        from: senderEmail,
+                        fromName: user.name || user.username || 'FPG Member',
+                        subject: subject,
+                        message: body
+                    })
+                });
+
+                if (!response.ok) throw new Error('Failed to send');
+
+                closeMessageModal();
+                document.getElementById('successModal').classList.add('active');
+                setTimeout(closeSuccessModal, 3000);
+
+            } catch (err) {
+                console.error('Error sending message:', err);
+                alert('Failed to send message. Please try again.');
+            }
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('messageModal').addEventListener('click', function(e) {
+            if (e.target === this) closeMessageModal();
+        });
+        document.getElementById('successModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSuccessModal();
+        });
+
+        // GHIN HCP Modal (admin/leadership only)
+        let ghinTargetName = '';
+
+        function openGhinModal(name, currentHcp) {
+            ghinTargetName = name;
+            document.getElementById('ghinModalSub').textContent = name;
+            document.getElementById('ghinInput').value = currentHcp !== 'N/A' ? currentHcp : '';
+            document.getElementById('ghinStatus').style.display = 'none';
+            document.getElementById('ghinSaveBtn').disabled = false;
+            document.getElementById('ghinSaveBtn').textContent = 'Save';
+            document.getElementById('ghinModal').classList.add('active');
+        }
+
+        function closeGhinModal() {
+            document.getElementById('ghinModal').classList.remove('active');
+        }
+
+        async function saveGhin() {
+            const handicap = document.getElementById('ghinInput').value.trim();
+            if (!handicap) { alert('Please enter a handicap value.'); return; }
+
+            const btn = document.getElementById('ghinSaveBtn');
+            const status = document.getElementById('ghinStatus');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            try {
+                const response = await fetch('/api/scores/update-ghin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ playerName: ghinTargetName, handicap })
+                });
+
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.error || 'Failed to update');
+
+                status.style.display = 'block';
+                status.style.background = '#f0fdf4';
+                status.style.color = '#166534';
+                status.textContent = '✓ GHIN HCP updated!';
+                btn.textContent = 'Saved ✓';
+
+                const member = allMembers.find(m => m.name === ghinTargetName);
+                if (member) member.handicap = handicap;
+                renderMembers(allMembers);
+
+                setTimeout(closeGhinModal, 1500);
+
+            } catch (error) {
+                status.style.display = 'block';
+                status.style.background = '#fef2f2';
+                status.style.color = '#991b1b';
+                status.textContent = `Error: ${error.message}`;
+                btn.disabled = false;
+                btn.textContent = 'Save';
+            }
+        }
+
+        // Load members on page load
+        loadMembers().then(() => {
+            // Check for search param from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = urlParams.get('search');
+            if (searchQuery) {
+                const searchInput = document.getElementById('searchInput');
+                searchInput.value = searchQuery;
+                // Trigger the search
+                const filtered = allMembers.filter(m => 
+                    m.name.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+                renderMembers(filtered);
+            }
+        });
+    </script>
+    <!-- GHIN HCP Edit Modal (admin/leadership only) -->
+    <div class="ghin-modal" id="ghinModal">
+        <div class="ghin-modal-content">
+            <div class="ghin-modal-title">Update GHIN HCP</div>
+            <div class="ghin-modal-sub" id="ghinModalSub"></div>
+            <input type="number" id="ghinInput" placeholder="e.g. 18.1" step="0.1" min="0" max="54" />
+            <div class="ghin-modal-status" id="ghinStatus"></div>
+            <div class="ghin-modal-actions">
+                <button onclick="closeGhinModal()" style="flex:1; padding:11px; background:white; color:#2D5016; border:2px solid #e8ecd9; border-radius:10px; font-weight:600; cursor:pointer;">Cancel</button>
+                <button onclick="saveGhin()" id="ghinSaveBtn" style="flex:2; padding:11px; background:linear-gradient(135deg,#2D5016,#3d6b1e); color:white; border:none; border-radius:10px; font-weight:600; cursor:pointer;">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/pwa-handler.js"></script>
+    <script>window.FPG_VAPID_PUBLIC_KEY = 'BMVYHYE-nit3H-kNICEPoYOKGxwjHtGdah--YfuwediIR3TbHRPMNEq8lR2urYbKht0eWOs1F6wWcmEpLbSUVCQ';</script>
+    <script src="/fpg-push.js"></script>
+</body>
+</html>
