@@ -13,15 +13,17 @@ module.exports = async (req, res) => {
     
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Default Tees!A2:C', // A: Player, B: Course, C: Tee Option
+      range: 'Default Tees!A2:H', // A: Course, B: Men's Default, C: Men's Yardage, E: Men's Alt, G: Women's Default, H: Women's Yardage
     });
     
-    const rows = response.data.values || [];
-    const tees = rows.map(row => ({
-      Player: row[0] || '',
-      Course: row[1] || '',
-      Tee: row[2] || ''
-    }));
+const tees = rows.map(row => ({
+  Course: row[0] || '',
+  MensDefault: row[1] || '',
+  MensYardage: row[2] || '',
+  MensAlt: row[4] || '',
+  WomensDefault: row[6] || '',
+  WomensYardage: row[7] || ''
+}));
     
     return res.status(200).json(tees);
   } catch (error) {
