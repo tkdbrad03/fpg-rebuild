@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FPG Member Dashboard</title>
+  <style>
+    :root {
+      --green: #2D5016;
+      --green-dark: #1e3a0f;
+      --gold: #d4af37;
+      --light: #f5f7f4;
+      --white: #ffffff;
+      --dark: #1a1a1a;
+      --gray: #718096;
+      --line: #e5e7eb;
+      --error: #e53e3e;
+      --success: #38a169;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+    body { background: var(--light); color: var(--dark); min-height: 100vh; }
+
+    /* ── Header ── */
+    header {
+      background: var(--green-dark);
+      color: var(--white);
+      border-bottom: 4px solid var(--gold);
+      padding: 0 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+    }
+    .header-left h1 { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .header-left .user-greeting { font-size: 0.78rem; opacity: 0.75; margin-top: 2px; }
+    .btn-logout {
+      background: rgba(255,255,255,0.15);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+    /* ── Main layout ── */
+    main { max-width: 900px; margin: 0 auto; padding: 16px; }
+
+    /* ── Event banner ── */
+    .event-banner {
+      background: var(--white);
+      border-left: 4px solid var(--gold);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .event-banner .label { font-size: 0.75rem; color: var(--gray); text-transform: uppercase; font-weight: 600; margin-bottom: 3px; }
+    .event-banner .event-name { font-size: 1.1rem; font-weight: 700; color: var(--green-dark); }
+    .event-banner .event-meta { font-size: 0.82rem; color: var(--gray); margin-top: 3px; }
+
+    /* ── Section cards ── */
+    .section-card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .section-header {
+      background: var(--green);
+      color: var(--white);
+      padding: 12px 18px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-body { padding: 0; }
+
+    /* ── Check-in iframe ── */
+    #checkin-frame {
+      width: 100%;
+      border: none;
+      min-height: 700px;
+      display: block;
+    }
+
+    /* ── Pairings ── */
+    .pairings-body { padding: 16px; }
+    .no-pairings {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+    .no-pairings .icon { font-size: 2rem; margin-bottom: 8px; }
+
+    .pairings-meta {
+      font-size: 0.82rem;
+      color: var(--gray);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .group-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .group-header {
+      background: var(--light);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+    .group-title { font-weight: 700; font-size: 0.9rem; color: var(--green-dark); }
+    .group-tee { font-size: 0.82rem; color: var(--gray); font-weight: 600; }
+
+    .player-row {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      gap: 10px;
+    }
+    .player-row:last-child { border-bottom: none; }
+    .player-avatar {
+      width: 34px;
+      height: 34px;
+      background: var(--green);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+    .player-info { flex: 1; min-width: 0; }
+    .player-name { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .player-games { font-size: 0.75rem; color: var(--gray); margin-top: 2px; }
+    .player-badges { display: flex; gap: 4px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .badge-hcp { background: #e8f3dd; color: var(--green-dark); }
+    .badge-sk { background: #fff3cd; color: #856404; }
+    .badge-gc { background: #cfe2ff; color: #084298; }
+    .badge-allin { background: var(--green); color: var(--white); }
+
+    /* ── Spinner ── */
+    .spinner-wrap { text-align: center; padding: 32px; color: var(--gray); }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(0,0,0,0.1);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-left">
+        <h1>FPG Member Portal</h1>
+        <div class="user-greeting" id="user-greeting">Welcome back</div>
+      </div>
+      <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Event Banner -->
+    <div class="event-banner">
+      <div class="label">Current Event</div>
+      <div class="event-name" id="event-name">Loading...</div>
+      <div class="event-meta" id="event-meta"></div>
+    </div>
+
+    <!-- Check-In Section -->
+    <div class="section-card">
+      <div class="section-header">⛳ Weekly Check-In</div>
+      <div class="section-body">
+        <iframe id="checkin-frame" src="/checkin.html" scrolling="no"
+          onload="resizeFrame(this)"></iframe>
+      </div>
+    </div>
+
+    <!-- Pairings Section -->
+    <div class="section-card">
+      <div class="section-header">🏌️ Tee Sheet &amp; Pairings</div>
+      <div class="pairings-body" id="pairings-body">
+        <div class="spinner-wrap">
+          <div class="spinner"></div>
+          <div>Loading pairings...</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // ── Auth guard ──
+    const _token = localStorage.getItem('fpg_token');
+    const _user = JSON.parse(localStorage.getItem('fpg_user') || '{}');
+    if (!_token || !_user.role) {
+      window.location.href = '/login.html';
+    }
+
+    // Redirect admins to their dashboard
+    if (_user.role === 'Administrator' || _user.role === 'Leadership') {
+      window.location.href = '/admin.html';
+    }
+
+    function logout() {
+      localStorage.removeItem('fpg_token');
+      localStorage.removeItem('fpg_user');
+      localStorage.removeItem('fpg_player_name');
+      window.location.href = '/login.html';
+    }
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('user-greeting').textContent = `Welcome, ${_user.name || _user.username}`;
+      await loadEvent();
+      await loadPairings();
+      autoResizeFrame();
+    });
+
+    // ── Auto-resize iframe to content height ──
+    function resizeFrame(frame) {
+      try {
+        frame.style.height = frame.contentWindow.document.body.scrollHeight + 'px';
+      } catch(e) {}
+    }
+
+    function autoResizeFrame() {
+      const frame = document.getElementById('checkin-frame');
+      // Poll until content loads, then set height
+      let attempts = 0;
+      const poll = setInterval(() => {
+        try {
+          const h = frame.contentWindow.document.body.scrollHeight;
+          if (h > 100) {
+            frame.style.height = h + 'px';
+            clearInterval(poll);
+          }
+        } catch(e) { clearInterval(poll); }
+        if (++attempts > 20) clearInterval(poll);
+      }, 300);
+    }
+
+    // ── Load event info ──
+    async function loadEvent() {
+      try {
+        const res = await fetch('/api/current-event');
+        const data = await res.json();
+        if (data.eventString) {
+          document.getElementById('event-name').textContent = data.eventString;
+          const parts = [];
+          if (data.location) parts.push(data.location);
+          if (data.slashDate) parts.push(data.slashDate);
+          if (data.teeTime) parts.push(data.teeTime);
+          document.getElementById('event-meta').textContent = parts.join(' · ');
+        } else {
+          document.getElementById('event-name').textContent = 'No upcoming event found';
+        }
+      } catch(e) {
+        document.getElementById('event-name').textContent = 'Unable to load event';
+      }
+    }
+
+    // ── Load pairings ──
+    async function loadPairings() {
+      const body = document.getElementById('pairings-body');
+      try {
+        const res = await fetch('/api/get-pairings');
+        const data = await res.json();
+
+        if (!data.published || data.groups.length === 0) {
+          body.innerHTML = `
+            <div class="no-pairings">
+              <div class="icon">📋</div>
+              <div>Pairings have not been published yet.</div>
+              <div style="margin-top:6px; font-size:0.78rem;">Check back closer to event day.</div>
+            </div>`;
+          return;
+        }
+
+        let html = `<div class="pairings-meta">${data.course} &nbsp;·&nbsp; ${data.date} &nbsp;·&nbsp; ${data.totalGroups} groups</div>`;
+
+        data.groups.forEach(group => {
+          html += `
+            <div class="group-card">
+              <div class="group-header">
+                <span class="group-title">Group ${group.groupNumber}</span>
+                <span class="group-tee">🕐 ${group.teeTime}</span>
+              </div>`;
+
+          group.players.forEach(player => {
+            const initials = player.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+            const isAllIn = player.games && player.games.includes('ALL IN');
+            const gamesDisplay = isAllIn ? 'ALL IN' : (player.games || '—');
+
+            html += `
+              <div class="player-row">
+                <div class="player-avatar">${initials}</div>
+                <div class="player-info">
+                  <div class="player-name">${player.name}</div>
+                  <div class="player-games">${gamesDisplay}</div>
+                </div>
+                <div class="player-badges">
+                  ${player.handicap ? `<span class="badge badge-hcp">HCP ${player.handicap}</span>` : ''}
+                  ${isAllIn ? `<span class="badge badge-allin">ALL IN</span>` : ''}
+                  ${player.isScorekeeper ? `<span class="badge badge-sk">SK</span>` : ''}
+                  ${player.isGamingCoord ? `<span class="badge badge-gc">GC</span>` : ''}
+                </div>
+              </div>`;
+          });
+
+          html += `</div>`;
+        });
+
+        body.innerHTML = html;
+
+      } catch(e) {
+        body.innerHTML = `<div class="no-pairings"><div class="icon">⚠️</div><div>Error loading pairings.</div></div>`;
+      }
+    }
+  </script>
+
+</body>
+</html>
