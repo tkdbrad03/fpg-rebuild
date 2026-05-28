@@ -1684,7 +1684,7 @@ localStorage.setItem('fpg_active_hole', currentHole);
       loadLocal();
       
       // Load verification status
-      loadVerificationStatus();
+      
       
 
       // Load tees: course defaults + per-player check-in choices
@@ -2194,65 +2194,12 @@ if (!isPar3) {
       const finalizeBtn = document.getElementById('finalize-round-btn');
       if (finalizeBtn) {
         const saved = isRoundAlreadySaved();
-        finalizeBtn.disabled = !(verificationStatus.front && verificationStatus.back) || saved;
+        finalizeBtn.disabled = saved;
         finalizeBtn.textContent = saved ? 'Round Saved' : 'Finalize & Save Round';
       }
 
     }
     
-    async function verifyScores(nine) {
-      const startHole = nine === 'front' ? 1 : 10;
-      const endHole = nine === 'front' ? 9 : 18;
-      
-      const btn = document.getElementById(`verify-${nine}9-btn`);
-      btn.disabled = true;
-      btn.textContent = 'Verifying...';
-
-      console.log('Sending verification request:', {
-  roundDate,
-  group: String(groupNumber),
-  startHole,
-  endHole,
-  verifiedBy: scorekeeperName
-});
-
-      try {
-        const response = await fetch('/api/verify-scores', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            roundDate,
-            group: String(groupNumber),
-            startHole,
-            endHole,
-            verifiedBy: scorekeeperName
-          })
-        });
-        
-        if (!response.ok) throw new Error('Verification failed');
-        
-        verificationStatus[nine] = true;
-        updateVerifyStatusBadges();
-        showToast(`✓ ${nine === 'front' ? 'Front' : 'Back'} 9 verified!`, 'success');
-        
-        // Save verification status locally
-        localStorage.setItem(`fpg_verified_${roundDate}_g${groupNumber}_${nine}`, 'true');
-        
-      } catch (err) {
-        console.error('Verification error:', err);
-        btn.disabled = false;
-        btn.textContent = `✓ Confirm ${nine === 'front' ? 'Front' : 'Back'} 9 Matches`;
-        showToast('⚠️ Verification failed - try again', 'error');
-      }
-    }
-    
-    // Load verification status from localStorage on init
-    function loadVerificationStatus() {
-      if (roundDate && groupNumber) {
-        verificationStatus.front = localStorage.getItem(`fpg_verified_${roundDate}_g${groupNumber}_front`) === 'true';
-        verificationStatus.back = localStorage.getItem(`fpg_verified_${roundDate}_g${groupNumber}_back`) === 'true';
-      }
-    }
 
     // ==================== FINALIZE + SAVE ROUND RESULTS ====================
 
@@ -2452,9 +2399,7 @@ if (!isPar3) {
     }
 
     async function finalizeAndSaveRound() {
-      if (!(verificationStatus.front && verificationStatus.back)) {
-        showToast('Verify Front 9 and Back 9 first.', 'error');
-        return;
+      
       }
 
       if (isRoundAlreadySaved()) {
