@@ -569,6 +569,7 @@
     let groups = [];
     let paymentStatus = {};
     let groupCounter = 0;
+    let memberHandicaps = {};
 
     // ── Boot ──
     document.addEventListener('DOMContentLoaded', async () => {
@@ -584,6 +585,7 @@
       renderCheckinsList();
       renderPool();
       renderPayments();
+      await Promise.all([loadCheckins(), loadMembers(), loadMemberHandicaps()]);
     }
 
     // ── Tab switching ──
@@ -732,7 +734,7 @@
     // ── PAIRINGS POOL ──
     function renderPool() {
       const el = document.getElementById('pool-list');
-      const assignedNames = new Set(groups.flatMap(g => g.players));
+      const assignedNames = new Set(groups.flatMap(g => g.players.map(p => typeof p === 'string' ? p : p.name)));
       const search = (document.getElementById('pool-search')?.value || '').toLowerCase();
 
       const players = allCheckins.filter(c =>
@@ -787,17 +789,20 @@
       if (!target) target = groups.find(g => g.players.length < 4);
       if (!target) { showToast('All groups are full (4 players max). Add a new group.', 'error'); return; }
       if (groups.some(g => g.players.includes(name))) { return; }
-      target.players.push(name);
+      target.players.push({ name, handicap: memberHandicaps[name] || null, isGuest: false });
       renderGroups();
       renderPool();
     }
 
-    function removeFromGroup(groupId, playerName) {
-      const group = groups.find(g => g.id === groupId);
-      if (group) group.players = group.players.filter(p => p !== playerName);
-      renderGroups();
-      renderPool();
-    }
+function removeFromGroup(groupId, playerName) {
+  const group = groups.find(g => g.id === groupId);
+  if (group) group.players = group.players.filter(p => {
+    const n = typeof p === 'string' ? p : p.name;
+    return n !== playerName;
+  });
+  renderGroups();
+  renderPool();
+}
 
     function removeGroup(groupId) {
       groups = groups.filter(g => g.id !== groupId);
@@ -836,11 +841,28 @@
           <div class="group-players-list">
             ${g.players.length === 0
               ? `<div class="group-empty">Click a player from the pool to assign here.</div>`
-              : g.players.map(name => `
-                  <div class="group-player-chip">
-                    <span>${name}</span>
-                    <button class="chip-remove" onclick="removeFromGroup(${g.id}, '${name.replace(/'/g,"\\'")}')">×</button>
-                  </div>`).join('')
+: g.players.map(p => {
+    const name = typeof p === 'string' ? p : p.name;
+    const isGuest = typeof p === 'object' && p.isGuest;
+    const hcp = typeof p === 'object' ? p.handicap : memberHandicaps[name];
+    return `
+      <div class="group-player-chip">
+        <div>
+          <span>${name}</span>
+          ${isGuest ? `
+            <div style="display:flex; align-items:center; gap:4px; margin-top:4px;">
+              <span style="font-size:0.72rem; color:var(--gray);">HCP:</span>
+              <input type="number" step="0.1" min="0" max="54"
+                style="width:60px; padding:2px 6px; border:1px solid var(--line); border-radius:4px; font-size:0.78rem;"
+                placeholder="—"
+                value="${hcp || ''}"
+                onchange="updateGuestHandicap(${g.id}, '${name.replace(/'/g,"\\'")}', this.value)">
+            </div>` 
+          : `<div style="font-size:0.72rem; color:var(--gray); margin-top:2px;">HCP: ${hcp ?? '—'}</div>`}
+        </div>
+        <button class="chip-remove" onclick="removeFromGroup(${g.id}, '${name.replace(/'/g,"\\'")}')">×</button>
+      </div>`;
+  }).join('')
             }
           </div>
           <div class="group-footer">
@@ -865,10 +887,11 @@
         groups: groups.map((g, idx) => ({
           groupNumber: idx + 1,
           teeTime: g.teeTime,
-          players: g.players.map(name => {
-            const checkin = allCheckins.find(c => c.playerName === name);
-            return { name, handicap: 0, quota: 0, strokes: 0 };
-          }),
+          players: g.players.map(p => {
+  const name = typeof p === 'string' ? p : p.name;
+  const handicap = (typeof p === 'object' && p.handicap) ? p.handicap : (memberHandicaps[name] || 0);
+  return { name, handicap, quota: 0, strokes: 0 };
+}),
           scorekeepers: [],
           gamingCoordinator: null
         }))
@@ -893,6 +916,12 @@
         btn.textContent = 'Publish Pairings';
       }
     }
+    function updateGuestHandicap(groupId, playerName, value) {
+  const group = groups.find(g => g.id === groupId);
+  if (!group) return;
+  const player = group.players.find(p => (typeof p === 'string' ? p : p.name) === playerName);
+  if (player && typeof player === 'object') player.handicap = parseFloat(value) || null;
+}
 
     // ── PAYMENTS ──
     function renderPayments() {
@@ -1011,6 +1040,13 @@
       t.className = `toast ${type} show`;
       setTimeout(() => { t.classList.remove('show'); }, 3500);
     }
+    async function loadMemberHandicaps() {
+  try {
+    const res = await fetch('/api/member-handicaps');
+    const data = await res.json();
+    data.forEach(m => { memberHandicaps[m.name] = m.handicap; });
+  } catch(e) { memberHandicaps = {}; }
+}
   </script>
 
 </body>
