@@ -175,9 +175,10 @@
 </head>
 <body>
 
-  <header>
-    <h1>FPG Membership Portal</h1>
-  </header>
+<header>
+  <h1>FPG Membership Portal</h1>
+  <div id="user-info" style="font-size:0.8rem; opacity:0.8; margin-top:4px;"></div>
+</header>
 
   <main>
     <div class="card event-card">
@@ -188,11 +189,8 @@
     </div>
 
     <div id="lockout-banner" class="banner banner-error">
-      Registration closed. Check-in locks down promptly on Thursday at 12:00 PM Eastern prior to the round.
-      <div style="margin-top:10px;">
-        <a href="#" onclick="showAdminLogin()" style="color:var(--fpg-error); font-size:0.85rem;">Admin Override</a>
-      </div>
-    </div>
+  Registration closed. Check-in locks down promptly on Thursday at 12:00 PM Eastern prior to the round.
+</div>
     <div id="duplicate-banner" class="banner banner-error">
       You are already checked in for this event. Duplicate registration is blocked.
     </div>
@@ -392,6 +390,12 @@
   </main>
 
   <script>
+    // Auth guard — members and above only
+const _token = localStorage.getItem('fpg_token');
+const _user = JSON.parse(localStorage.getItem('fpg_user') || '{}');
+if (!_token || !_user.role) {
+  window.location.href = '/login.html';
+}
     // ── State ──
     let currentEventString = "";
     let systemLockoutActive = false;
@@ -402,6 +406,7 @@
 
     // ── Boot ──
     document.addEventListener("DOMContentLoaded", async () => {
+      document.getElementById('user-info').textContent = `Signed in as ${_user.name || _user.username}`;
       try {
         await bootstrapCheckInContext();
       } catch (err) {
