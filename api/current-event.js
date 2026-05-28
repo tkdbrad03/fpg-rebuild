@@ -46,9 +46,13 @@ const eventDateStr = fpgEvent.start.dateTime ? fpgEvent.start.dateTime.split('T'
   dynamicEventString = `${fpgEvent.summary}, ${monthStr} ${dayNum}`;
 }
     
+    const [year, month, day] = eventDateStr.split('-').map(Number);
+    const slashDate = `${month}/${day}/${year}`;
+
     return res.status(200).json({
-      eventString: dynamicEventString, // Forces: "Florida Players - Greenfield Plantation, May 30"
-      date: eventDateStr
+      eventString: dynamicEventString,
+      date: eventDateStr,
+      slashDate: slashDate
     });
   } catch (error) {
     console.error("Calendar Engine Error:", error);
