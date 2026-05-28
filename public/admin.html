@@ -620,14 +620,15 @@ async function loadAll() {
 
     // ── Tab switching ──
     function switchTab(name) {
-      document.querySelectorAll('.tab').forEach((t, i) => {
-        const panels = ['overview','checkins','pairings'];
-        t.classList.toggle('active', panels[i] === name);
-      });
-      document.querySelectorAll('.tab-panel').forEach(p => {
-        p.classList.toggle('active', p.id === `tab-${name}`);
-      });
-    }
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    const panels = ['overview','checkins','pairings'];
+    t.classList.toggle('active', panels[i] === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => {
+    p.classList.toggle('active', p.id === `tab-${name}`);
+  });
+  if (name === 'pairings') updateGCDropdown();
+}
 
     
 
