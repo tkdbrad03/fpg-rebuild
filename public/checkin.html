@@ -443,7 +443,10 @@ if (!_token || !_user.role) {
 
       currentEventString = eventRes.eventString;
       document.getElementById("event-display").textContent = currentEventString;
-      if (eventRes.location) document.getElementById("event-location").textContent = eventRes.location;
+      if (eventRes.location) {
+  const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(eventRes.location)}`;
+  document.getElementById("event-location").innerHTML = `<a href="${mapsUrl}" target="_blank" style="color:var(--fpg-gray); text-decoration:underline; font-size:0.85rem;">${eventRes.location}</a>`;
+}
       if (eventRes.teeTime) document.getElementById("event-datetime").textContent = `${eventRes.slashDate} • ${eventRes.teeTime}`;
 
       memberRoster = membersRes;
