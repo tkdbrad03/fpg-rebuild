@@ -492,30 +492,33 @@
       if (course.includes(',')) course = course.split(',')[0].trim();
 
       // Show course tee info box (Men/Women defaults from sheet)
-      const courseDefaults = defaultTeesMap.filter(r => r.Course === course);
-      if (courseDefaults.length > 0) {
-        // Build tee info display — group by showing up to Men + Women entries
-        const mens = courseDefaults.find(r => r.Player === name); // player-specific
-        const courseTees = defaultTeesMap.filter(r => r.Course === course);
-        // Show a general course tee box using available data
-        const teeNames = [...new Set(courseTees.map(r => r.Tee).filter(Boolean))];
-        if (teeNames.length > 0) {
-          infoBox.innerHTML = `<div class="tee-info-course">Default Tees at ${course}</div>
-            <div class="tee-info-row">${teeNames.map(t => `<div class="tee-info-box-item"><div class="tee-cat">Tee</div><div class="tee-color">${t}</div></div>`).join('')}</div>`;
-          infoBox.style.display = "block";
-        } else {
-          infoBox.style.display = "none";
-        }
-      } else {
-        infoBox.style.display = "none";
-      }
+      const record = defaultTeesMap.find(r => r.Course && course.includes(r.Course.split(' ')[0]));
 
-      const record = defaultTeesMap.find(r => r.Player === name && r.Course === course);
-      if (record && record.Tee) {
-        hint.textContent = `Your verified profile default here: ${record.Tee}`;
-      } else {
-        hint.textContent = "No default preference tracked for this course location yet.";
-      }
+if (record) {
+  infoBox.innerHTML = `
+    <div class="tee-info-course">Default Tees at ${record.Course}</div>
+    <div class="tee-info-row">
+      <div class="tee-info-box-item">
+        <div class="tee-cat">Men's Default</div>
+        <div class="tee-color">${record.MensDefault}</div>
+        <div class="tee-yardage">${record.MensYardage} yds</div>
+      </div>
+      <div class="tee-info-box-item">
+        <div class="tee-cat">Men's Alt</div>
+        <div class="tee-color">${record.MensAlt || '—'}</div>
+      </div>
+      <div class="tee-info-box-item">
+        <div class="tee-cat">Women's Default</div>
+        <div class="tee-color">${record.WomensDefault}</div>
+        <div class="tee-yardage">${record.WomensYardage} yds</div>
+      </div>
+    </div>`;
+  infoBox.style.display = "block";
+  hint.textContent = "";
+} else {
+  infoBox.style.display = "none";
+  hint.textContent = "No tee info available for this course yet.";
+}
     }
 
     // ── Buy-In Selection ──
