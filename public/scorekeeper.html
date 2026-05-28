@@ -2399,14 +2399,10 @@ if (!isPar3) {
     }
 
     async function finalizeAndSaveRound() {
-      
+      if (isRoundAlreadySaved()) {
+        showToast('Round already saved.', 'success');
+        return;
       }
-
-if (isRoundAlreadySaved()) {
-  showToast('Round already saved.', 'success');
-
-}
-
       try {
         const finalizeBtn = document.getElementById('finalize-round-btn');
         if (finalizeBtn) {
@@ -2448,7 +2444,6 @@ if (isRoundAlreadySaved()) {
         showToast('Could not save round results', 'error');
         const finalizeBtn = document.getElementById('finalize-round-btn');
         if (finalizeBtn) finalizeBtn.textContent = 'Finalize & Save Round';
-        updateVerifyStatusBadges();
       }
     }
     
