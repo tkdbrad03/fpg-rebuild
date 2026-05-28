@@ -843,7 +843,10 @@ async function loadAll() {
       if (groups.length === 0) { showToast('No groups to publish.', 'error'); return; }
       const invalid = groups.filter(g => g.players.length < 2);
       if (invalid.length > 0) { showToast(`${invalid.length} group(s) have fewer than 2 players.`, 'error'); return; }
-
+      const mhRes = await fetch('/api/member-handicaps');
+const mhData = await mhRes.json();
+const quotaMap = {};
+mhData.forEach(m => { quotaMap[m.name] = m.quota || 0; });
       const btn = document.getElementById('publish-btn');
       btn.disabled = true;
       btn.textContent = 'Publishing...';
@@ -857,7 +860,7 @@ async function loadAll() {
           players: g.players.map(p => {
   const name = typeof p === 'string' ? p : p.name;
   const hcp = (typeof p === 'object' && p.handicap) ? p.handicap : (memberHandicaps[name] || 0);
-  return { name, handicap: hcp, quota: 0, strokes: 0 };
+  return { name, handicap: hcp, quota: quotaMap[name] || 0, strokes: 0 };
 }),
           scorekeepers: [g.sk1, g.sk2].filter(Boolean),
 gamingCoordinator: gamingCoordinator || null
