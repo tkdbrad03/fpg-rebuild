@@ -288,7 +288,7 @@
 
     <!-- Header -->
     <div class="header">
-        <a href="/more.html" class="back-btn">
+        <a href="/dashboard.html" class="back-btn">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
@@ -342,36 +342,25 @@
     <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <a href="/dashboard.html" class="nav-item">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            <span>Home</span>
-        </a>
-        <a href="/pairings.html" class="nav-item">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-            <span>Pairings</span>
-        </a>
-        <a href="/standings.html" class="nav-item">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 20V10"></path>
-                <path d="M12 20V4"></path>
-                <path d="M6 20v-6"></path>
-            </svg>
-            <span>Standings</span>
-        </a>
-        <a href="/more.html" class="nav-item active">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="1"></circle>
-                <circle cx="12" cy="5" r="1"></circle>
-                <circle cx="12" cy="19" r="1"></circle>
-            </svg>
-            <span>More</span>
-        </a>
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+  <span>Home</span>
+</a>
+<a href="/members.html" class="nav-item active">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  <span>Members</span>
+</a>
+<a href="/scorekeeper.html" class="nav-item">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+  <span>Scorekeeper</span>
+</a>
+<a href="/profile-edit.html" class="nav-item">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  <span>Profile</span>
+</a>
+<a href="#" class="nav-item" onclick="logout()">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+  <span>Sign Out</span>
+</a>
     </div>
 
     <script>
@@ -586,6 +575,12 @@
                 }, 3000);
             }
         }
+        function logout() {
+  localStorage.removeItem('fpg_token');
+  localStorage.removeItem('fpg_user');
+  localStorage.removeItem('fpg_player_name');
+  window.location.href = '/login.html';
+}
 
         // Load profile on page load
         loadProfile();
