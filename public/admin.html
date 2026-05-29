@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>FPG Admin Dashboard</title>
   <link rel="icon" type="image/png" href="/favicon.png">
+  <script src="/js/courses.js"></script>
   <style>
     :root {
       --green: #2D5016;
@@ -577,6 +578,24 @@ async function loadMemberHandicaps() {
   } catch(e) {}
 }
 
+  const FEMALE_NAMES = ['tasha','sabrina','nicole','kelleye','bridgette','dorothy','dot','darlene','sharon','debbie','linda','karen','patricia','barbara','sandra','betty','margaret','shirley','donna','carol','ruth','janet','diane','susan','kathy','noy','gwen','cheryll','berlinda','dana'];
+
+function calculatePlayerStrokes(playerName, handicap, courseName) {
+  if (!handicap || handicap <= 0) return 0;
+  if (typeof getCourse !== 'function') return Math.min(Math.round(handicap), 18);
+  const course = getCourse(courseName);
+  if (!course) return Math.min(Math.round(handicap), 18);
+  const firstName = (playerName || '').split(' ')[0].toLowerCase();
+  const nickMatch = (playerName || '').match(/['"]([^'"]+)['"]/);
+  const nickname = nickMatch ? nickMatch[1].toLowerCase() : '';
+  const female = FEMALE_NAMES.includes(firstName) || FEMALE_NAMES.includes(nickname);
+  const teeName = female ? course.defaultTees?.women : course.defaultTees?.men;
+  const teeKey = female && teeName && !teeName.includes('-female') ? `${teeName}-female` : teeName;
+  const tee = course.tees?.[teeKey];
+  if (!tee) return Math.min(Math.round(handicap), 18);
+  return Math.min(Math.round((handicap * (tee.slope / 113)) + (tee.rating - tee.par)), 18);
+}
+
 async function loadExistingPairings() {
   try {
     const res = await fetch('/api/get-pairings');
@@ -860,8 +879,7 @@ mhData.forEach(m => { quotaMap[m.name] = m.quota || 0; });
           players: g.players.map(p => {
   const name = typeof p === 'string' ? p : p.name;
   const hcp = (typeof p === 'object' && p.handicap) ? p.handicap : (memberHandicaps[name] || 0);
-  const female = ['tasha','sabrina','nicole','kelleye','bridgette','dorothy','dot','darlene','sharon','susan','kathy','noy','darlene'].includes(name.split(' ')[0].toLowerCase());
-const strokes = Math.min(Math.round(hcp), 18);
+  const strokes = calculatePlayerStrokes(name, hcp, currentEventCourse);
 return { name, handicap: hcp, quota: quotaMap[name] || 0, strokes };
 }),
           scorekeepers: [g.sk1, g.sk2].filter(Boolean),
