@@ -860,7 +860,9 @@ mhData.forEach(m => { quotaMap[m.name] = m.quota || 0; });
           players: g.players.map(p => {
   const name = typeof p === 'string' ? p : p.name;
   const hcp = (typeof p === 'object' && p.handicap) ? p.handicap : (memberHandicaps[name] || 0);
-  return { name, handicap: hcp, quota: quotaMap[name] || 0, strokes: 0 };
+  const female = ['tasha','sabrina','nicole','kelleye','bridgette','dorothy','dot','darlene','sharon','susan','kathy','noy','darlene'].includes(name.split(' ')[0].toLowerCase());
+const strokes = Math.min(Math.round(hcp), 18);
+return { name, handicap: hcp, quota: quotaMap[name] || 0, strokes };
 }),
           scorekeepers: [g.sk1, g.sk2].filter(Boolean),
 gamingCoordinator: gamingCoordinator || null
